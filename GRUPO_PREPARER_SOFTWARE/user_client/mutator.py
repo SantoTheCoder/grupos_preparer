@@ -67,8 +67,7 @@ class GroupMutator:
             return
 
         if test_mode:
-            logger.warning("🧪 MODO DE TESTE ATIVADO: Executando mutação apenas no PRIMEIRO grupo da matriz para homologação.")
-            groups = groups[:1]
+            logger.warning("🧪 MODO DE TESTE ATIVADO: Apenas o PRIMEIRO grupo válido será homologado.")
 
         # Upload prévio da imagem para reciclar ponteiro de Bytes HTTP.
         # Assim poupamos rede: subimos uma foto pro Telegram e usamos a ID dela.
@@ -191,6 +190,9 @@ class GroupMutator:
                 # Persistência Ativa de Checkpoint - Salva no arquivo imediatamente após o grupo
                 group['status'] = 'MUTADO'
                 self.persistence.save_state(groups)
+                
+                # Exportação Limpa para a Orquestração do Bot de Produção (Fase 4)
+                self.persistence.save_production_group(entity_id, new_name, group.get("link", ""))
 
                 logger.info(f"✅ CONCLUÍDO: [{new_name}] blindado com sucesso e status salvo no disco.")
             
@@ -199,6 +201,10 @@ class GroupMutator:
 
             # Despressurizador térmico: Jitter de 18 a 32s protege contra Block rate-limit 429 nas varreduras.
             await asyncio.sleep(random.uniform(18, 32))
+
+            if test_mode:
+                logger.warning("🧪 MODO DE TESTE CONCLUÍDO: Abortando restante da matriz.")
+                break
 
         logger.info("🧊 Pipeline de Mutação Encerrado.")
         await self.client.disconnect()

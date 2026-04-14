@@ -38,3 +38,23 @@ class PersistenceManager:
                 return json.load(f)
         return []
 
+    def save_production_group(self, group_id: int, name: str, link: str):
+        """Salva cumulativamente os grupos blindados no formato estrito de Produção."""
+        prod_path = os.path.join(DATA_DIR, 'production_groups.json')
+        data = []
+        if os.path.exists(prod_path):
+            try:
+                with open(prod_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+            except Exception:
+                pass
+            
+        if not any(g.get("ID") == group_id for g in data):
+            data.append({
+                "NOME": name,
+                "LINK": link,
+                "ID": group_id
+            })
+            with open(prod_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+            logger.info(f"🔰 [PRODUÇÃO] Chat exportado para produção: {name}.")

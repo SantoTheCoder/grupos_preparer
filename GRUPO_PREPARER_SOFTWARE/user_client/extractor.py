@@ -2,6 +2,10 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import telethon.network.mtprotostate
+telethon.network.mtprotostate.MSG_TOO_OLD_DELTA = 999999999
+telethon.network.mtprotostate.MSG_TOO_NEW_DELTA = 999999999
+
 import logging
 import asyncio
 from telethon import TelegramClient
