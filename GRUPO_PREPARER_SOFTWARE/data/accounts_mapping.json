@@ -1,0 +1,191 @@
+[
+    {
+        "name": "PEDRO GRUPO",
+        "phone": "+5561990005015",
+        "api_id": 36557425,
+        "api_hash": "2f9fddb1079d9259f6f3e05c6f679006",
+        "groups": ["Consulta Gratis"]
+    },
+    {
+        "name": "Suporte Dogba",
+        "phone": "+5511939281034",
+        "api_id": 37527274,
+        "api_hash": "f7c7bc9210e2f2780b311c539096a7b1",
+        "groups": ["A06", "A6", "C01", "C1"]
+    },
+    {
+        "name": "Juliana Molana",
+        "phone": "+5511965062788",
+        "api_id": 32253400,
+        "api_hash": "1fe8f4ce68eb7ca0fc20a5ff8893a3df",
+        "groups": ["C06", "C6"]
+    },
+    {
+        "name": "Marcio Grupon",
+        "phone": "+5532984873864",
+        "api_id": 33051369,
+        "api_hash": "bafbb44a13d4f3c18dbccbeb78c76ae2",
+        "groups": ["B06", "B6"]
+    },
+    {
+        "name": "Arthuro NEves",
+        "phone": "5561996324719",
+        "api_id": 34379605,
+        "api_hash": "78824b295a58a8401fb76d79c4f39428",
+        "groups": ["C05", "C5"]
+    },
+    {
+        "name": "Cleide Nunes da Silva",
+        "phone": "+5511949516582",
+        "api_id": 35196829,
+        "api_hash": "c249b7dc1a3a5a5ed97a3d2651944380",
+        "groups": ["E04", "E4"]
+    },
+    {
+        "name": "Carlos Padilha",
+        "phone": "+5519999775771",
+        "api_id": 33563096,
+        "api_hash": "6220007784eb3500bc80934641bde62a",
+        "groups": ["E05", "E5"]
+    },
+    {
+        "name": "Leandro e Rochele",
+        "phone": "+5521981057150",
+        "api_id": 24850080,
+        "api_hash": "55b004b63b1e9fcc9b60ec65e22a3cda",
+        "groups": ["E06", "E6"]
+    },
+    {
+        "name": "Thiago Fernandes (+55 31 99615 0895)",
+        "phone": "+5531996150895",
+        "api_id": 39961721,
+        "api_hash": "99213aa38eeadbe79e24e23855d3cad0",
+        "groups": ["E07", "E7"]
+    },
+    {
+        "name": "Flávio",
+        "phone": "+5535998547022",
+        "api_id": 30259354,
+        "api_hash": "cc27249d9b1da8e5ee9daaa3d28f2896",
+        "groups": ["E08", "E8"]
+    },
+    {
+        "name": "Cláudio Pimentel",
+        "phone": "+5543996318125",
+        "api_id": 32196249,
+        "api_hash": "c6662e5568ac46e779c44b5fa2e75f02",
+        "groups": ["E09", "E9"]
+    },
+    {
+        "name": "She Day",
+        "phone": "+5562982097525",
+        "api_id": 37746918,
+        "api_hash": "aa8ac1b9f0c3eb5f4071489559d5629d",
+        "groups": ["F00", "F0"]
+    },
+    {
+        "name": "Emmie (+55 75 99105 9985)",
+        "phone": "+5575991059985",
+        "api_id": 35573915,
+        "api_hash": "05a7672469381d594624251428786449",
+        "groups": ["F04", "F4"]
+    },
+    {
+        "name": "Jenny Garcia",
+        "phone": "+5581991534825",
+        "api_id": 31738666,
+        "api_hash": "8def53a893f170dee2ba58e8d787948e",
+        "groups": ["F05", "F5"]
+    },
+    {
+        "name": "Fabio Silveira",
+        "phone": "5521970362206",
+        "api_id": 36884520,
+        "api_hash": "0af155a3b649094263c4e10412205c5e",
+        "groups": ["F06", "F6"]
+    },
+    {
+        "name": "Alex Vilanova",
+        "phone": "5591985592704",
+        "api_id": 34754313,
+        "api_hash": "203ea6f0a4b8a7a16aa46f69a4d6b154",
+        "groups": ["D06", "D6"]
+    },
+    {
+        "name": "Nancy",
+        "phone": "5563991103677",
+        "api_id": 39860301,
+        "api_hash": "48d225e72e150253d3532b0872078d73",
+        "groups": ["D01", "D1"]
+    },
+    {
+        "name": "Hαnnah Duddy",
+        "phone": "5521986716946",
+        "api_id": 39683525,
+        "api_hash": "fcb74816ebbe5933498654ed0ffb6a31",
+        "groups": ["F07", "F7"]
+    },
+    {
+        "name": "Felipe",
+        "phone": "5596991559867",
+        "api_id": 36271948,
+        "api_hash": "5b99b3d5e62295fed022521a148d6e23",
+        "groups": ["F08", "F8"]
+    },
+    {
+        "name": "Reyna Ayden",
+        "phone": "5514991410506",
+        "api_id": 34832988,
+        "api_hash": "f7e8c313ba58aa067f21dd900d254ceb",
+        "groups": ["F09", "F9"]
+    },
+    {
+        "name": "Jessica",
+        "phone": "5511954248701",
+        "api_id": 30566490,
+        "api_hash": "5d77fe835b58d30f55137af629deeb70",
+        "groups": ["G00", "G0"]
+    },
+    {
+        "name": "Stella",
+        "phone": "5521986750689",
+        "api_id": 30002018,
+        "api_hash": "3ded688fd9c9efb48ffcc621f373677d",
+        "groups": ["G01", "G1"]
+    },
+    {
+        "name": "Jefferson",
+        "phone": "5521994315764",
+        "api_id": 30294874,
+        "api_hash": "0136825a1be853cbbb00c006be6aee05",
+        "groups": ["G02", "G2"]
+    },
+    {
+        "name": "Ljunn Bb",
+        "phone": "+5511913011626",
+        "api_id": 29166281,
+        "api_hash": "467680b4c899d19c3388c2afa9f3a738",
+        "groups": ["00"]
+    },
+    {
+        "name": "Íris Brun",
+        "phone": "5569992208183",
+        "api_id": 38738907,
+        "api_hash": "8089c5f6ef48abf97008fbb62efaeb9b",
+        "groups": ["E00", "E0"]
+    },
+    {
+        "name": "Michelle",
+        "phone": "5569992523576",
+        "api_id": 37833194,
+        "api_hash": "662403def711f875edb8f1a04ecb15c8",
+        "groups": ["D02", "D2"]
+    },
+    {
+        "name": ".. Laura",
+        "phone": "5591984007288",
+        "api_id": 33024435,
+        "api_hash": "399d9f3e5898b3a2745d08712f2a1d56",
+        "groups": ["D03", "D3"]
+    }
+]
