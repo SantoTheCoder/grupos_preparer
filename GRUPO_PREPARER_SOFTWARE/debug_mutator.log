@@ -1039,3 +1039,53 @@
 [00:35:35] INFO [telethon.client.users._call:116] Sleeping for 804s (0:13:24) on EditChatAboutRequest flood wait
 [00:35:36] INFO [telethon.client.updates._update_loop:344] Got difference for account updates
 [00:35:36] INFO [telethon.client.updates._update_loop:442] Got difference for channel 3817172815 updates
+[00:48:59] INFO [MUTADOR_MESTRE.run_mutations:138]    -> [3/4] Promovendo Microsserviço BOT à Orquestrador...
+[00:49:00] WARNING [MUTADOR_MESTRE.run_mutations:142]    -> [3/4 AVISO] Telegram bloqueou promoção: Either your admin rights do not allow you to do this or you passed the wrong rights combination (some rights only apply to channels and vice versa) (caused by EditAdminRequest). Adicione o bot manualmente.
+[00:49:00] INFO [MUTADOR_MESTRE.run_mutations:159]    -> [4/4] Cravação permanente da mensagem do topo...
+[00:49:00] WARNING [MUTADOR_MESTRE.run_mutations:170]    -> [4/4 AVISO] O seu texto ultrapassa os 1024 caracteres. Enviando Imagem e depois Texto.
+[00:49:00] INFO [telethon.client.uploads.upload_file:637] Uploading file of 903519 bytes in 7 chunks of 131072
+[00:49:08] INFO [data.io_manager.save_state:32] 💾 Memória térmica convertida em I/O: 31 alvos persistidos.
+[00:49:08] INFO [data.io_manager.save_production_group:68] 🔰 [PRODUÇÃO] Chat exportado para produção: 🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗖𝟬𝟴］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙.
+[00:49:08] INFO [MUTADOR_MESTRE.run_mutations:196] ✅ CONCLUÍDO: [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗖𝟬𝟴］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙] blindado com sucesso e status salvo no disco.
+[00:49:37] INFO [MUTADOR_MESTRE.run_mutations:111] ⚡ Disparando rotina para Chat Absoluto O(1): [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗖𝟬𝟵］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙]
+[00:49:37] INFO [MUTADOR_MESTRE.run_mutations:114]    -> [1/4] Aniquilando resíduos anteriores...
+[00:49:38] INFO [MUTADOR_MESTRE.run_mutations:119]    -> [2/4] Sobrescrevendo Título, Descrição e Foto...
+[00:49:38] INFO [MUTADOR_MESTRE.run_mutations:138]    -> [3/4] Promovendo Microsserviço BOT à Orquestrador...
+[00:49:38] WARNING [MUTADOR_MESTRE.run_mutations:142]    -> [3/4 AVISO] Telegram bloqueou promoção: Either your admin rights do not allow you to do this or you passed the wrong rights combination (some rights only apply to channels and vice versa) (caused by EditAdminRequest). Adicione o bot manualmente.
+[00:49:38] INFO [MUTADOR_MESTRE.run_mutations:159]    -> [4/4] Cravação permanente da mensagem do topo...
+[00:49:38] WARNING [MUTADOR_MESTRE.run_mutations:170]    -> [4/4 AVISO] O seu texto ultrapassa os 1024 caracteres. Enviando Imagem e depois Texto.
+[00:49:38] INFO [telethon.client.uploads.upload_file:637] Uploading file of 903519 bytes in 7 chunks of 131072
+[00:49:39] INFO [telethon.client.updates._update_loop:344] Got difference for account updates
+[00:49:40] INFO [telethon.client.updates._update_loop:442] Got difference for channel 3365596582 updates
+[00:49:45] INFO [data.io_manager.save_state:32] 💾 Memória térmica convertida em I/O: 31 alvos persistidos.
+[00:49:45] INFO [data.io_manager.save_production_group:68] 🔰 [PRODUÇÃO] Chat exportado para produção: 🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗖𝟬𝟵］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙.
+[00:49:45] INFO [MUTADOR_MESTRE.run_mutations:196] ✅ CONCLUÍDO: [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗖𝟬𝟵］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙] blindado com sucesso e status salvo no disco.
+[00:49:45] INFO [telethon.client.updates._update_loop:442] Got difference for channel 3365596582 updates
+[00:50:12] INFO [MUTADOR_MESTRE.run_mutations:111] ⚡ Disparando rotina para Chat Absoluto O(1): [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗖𝟭𝟬］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙]
+[00:50:12] INFO [MUTADOR_MESTRE.run_mutations:114]    -> [1/4] Aniquilando resíduos anteriores...
+[00:50:12] INFO [MUTADOR_MESTRE.run_mutations:119]    -> [2/4] Sobrescrevendo Título, Descrição e Foto...
+[00:50:13] INFO [MUTADOR_MESTRE.run_mutations:138]    -> [3/4] Promovendo Microsserviço BOT à Orquestrador...
+[00:50:13] WARNING [MUTADOR_MESTRE.run_mutations:142]    -> [3/4 AVISO] Telegram bloqueou promoção: Either your admin rights do not allow you to do this or you passed the wrong rights combination (some rights only apply to channels and vice versa) (caused by EditAdminRequest). Adicione o bot manualmente.
+[00:50:13] INFO [MUTADOR_MESTRE.run_mutations:159]    -> [4/4] Cravação permanente da mensagem do topo...
+[00:50:13] WARNING [MUTADOR_MESTRE.run_mutations:170]    -> [4/4 AVISO] O seu texto ultrapassa os 1024 caracteres. Enviando Imagem e depois Texto.
+[00:50:13] INFO [telethon.client.uploads.upload_file:637] Uploading file of 903519 bytes in 7 chunks of 131072
+[00:50:13] INFO [telethon.client.updates._update_loop:344] Got difference for account updates
+[00:50:17] INFO [telethon.client.updates._update_loop:442] Got difference for channel 3489031617 updates
+[00:50:22] INFO [data.io_manager.save_state:32] 💾 Memória térmica convertida em I/O: 31 alvos persistidos.
+[00:50:22] INFO [data.io_manager.save_production_group:68] 🔰 [PRODUÇÃO] Chat exportado para produção: 🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗖𝟭𝟬］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙.
+[00:50:22] INFO [MUTADOR_MESTRE.run_mutations:196] ✅ CONCLUÍDO: [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗖𝟭𝟬］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙] blindado com sucesso e status salvo no disco.
+[00:50:23] INFO [telethon.client.updates._update_loop:442] Got difference for channel 3489031617 updates
+[00:50:43] INFO [MUTADOR_MESTRE.run_mutations:111] ⚡ Disparando rotina para Chat Absoluto O(1): [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗗𝟬𝟭］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙]
+[00:50:43] INFO [MUTADOR_MESTRE.run_mutations:114]    -> [1/4] Aniquilando resíduos anteriores...
+[00:50:44] INFO [MUTADOR_MESTRE.run_mutations:119]    -> [2/4] Sobrescrevendo Título, Descrição e Foto...
+[00:50:45] WARNING [MUTADOR_MESTRE.run_mutations:146] Erro ao alterar título: Invalid object ID for a chat. Make sure to pass the right types, for instance making sure that the request is designed for chats (not channels/megagroups) or otherwise look for a different one more suited\nAn example working with a megagroup and AddChatUserRequest, it will fail because megagroups are channels. Use InviteToChannelRequest instead (caused by EditChatTitleRequest)
+[00:50:45] WARNING [MUTADOR_MESTRE.run_mutations:156]    -> [3/4 ATENÇÃO] Grupos normais não podem ter Bot promovido como super admin. Bot ignorado neste aqui.
+[00:50:45] INFO [MUTADOR_MESTRE.run_mutations:159]    -> [4/4] Cravação permanente da mensagem do topo...
+[00:50:45] WARNING [MUTADOR_MESTRE.run_mutations:170]    -> [4/4 AVISO] O seu texto ultrapassa os 1024 caracteres. Enviando Imagem e depois Texto.
+[00:50:45] INFO [telethon.client.uploads.upload_file:637] Uploading file of 903519 bytes in 7 chunks of 131072
+[00:50:54] INFO [data.io_manager.save_state:32] 💾 Memória térmica convertida em I/O: 31 alvos persistidos.
+[00:50:54] INFO [data.io_manager.save_production_group:68] 🔰 [PRODUÇÃO] Chat exportado para produção: 🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗗𝟬𝟭］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙.
+[00:50:54] INFO [MUTADOR_MESTRE.run_mutations:196] ✅ CONCLUÍDO: [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗗𝟬𝟭］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙] blindado com sucesso e status salvo no disco.
+[00:51:16] INFO [MUTADOR_MESTRE.run_mutations:208] 🧊 Pipeline de Mutação Encerrado.
+[00:51:16] INFO [telethon.network.mtprotosender._disconnect:319] Disconnecting from 149.154.175.60:443/TcpFull...
+[00:51:16] INFO [telethon.network.mtprotosender._disconnect:339] Disconnection from 149.154.175.60:443/TcpFull complete!

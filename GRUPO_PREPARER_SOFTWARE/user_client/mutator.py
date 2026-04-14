@@ -108,6 +108,12 @@ class GroupMutator:
 
             try:
                 entity = await self.client.get_entity(entity_id)
+                # Interceptação de Upgrades do Telegram: Se o grupo normal virou um Supergrupo no meio do caminho
+                if hasattr(entity, 'migrated_to') and entity.migrated_to is not None:
+                    logger.warning(f"⚠️ Grupo foi promovido a Megagrupo pelo Telegram! Migrando ponteiro ID...")
+                    entity = await self.client.get_entity(entity.migrated_to)
+                    entity_id = entity.id
+                    
                 logger.info(f"⚡ Disparando rotina para Chat Absoluto O(1): [{new_name}]")
                 
                 # 1. Zeroing - Deletar Histórico da Matriz
