@@ -789,3 +789,43 @@
 [22:47:08] WARNING [MUTADOR_MESTRE.run_mutations:169]    -> [4/4 AVISO] O seu texto ultrapassa os 1024 caracteres. Enviando Imagem e depois Texto.
 [22:47:08] INFO [telethon.client.uploads.upload_file:637] Uploading file of 903519 bytes in 7 chunks of 131072
 [22:47:11] INFO [telethon.client.updates._update_loop:442] Got difference for channel 3841747304 updates
+[22:47:16] INFO [data.io_manager.save_state:32] 💾 Memória térmica convertida em I/O: 31 alvos persistidos.
+[22:47:16] INFO [data.io_manager.save_production_group:68] 🔰 [PRODUÇÃO] Chat exportado para produção: 🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗕𝟬𝟭］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙.
+[22:47:16] INFO [MUTADOR_MESTRE.run_mutations:197] ✅ CONCLUÍDO: [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗕𝟬𝟭］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙] blindado com sucesso e status salvo no disco.
+[22:47:17] INFO [telethon.client.updates._update_loop:442] Got difference for channel 3841747304 updates
+[22:47:45] INFO [MUTADOR_MESTRE.run_mutations:110] ⚡ Disparando rotina para Chat Absoluto O(1): [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗕𝟬𝟮］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙]
+[22:47:45] INFO [MUTADOR_MESTRE.run_mutations:113]    -> [1/4] Aniquilando resíduos anteriores...
+[22:47:46] INFO [MUTADOR_MESTRE.run_mutations:118]    -> [2/4] Sobrescrevendo Título, Descrição e Foto...
+[22:47:47] INFO [MUTADOR_MESTRE.run_mutations:137]    -> [3/4] Promovendo Microsserviço BOT à Orquestrador...
+[22:47:47] WARNING [MUTADOR_MESTRE.run_mutations:141]    -> [3/4 AVISO] Telegram bloqueou promoção: Either your admin rights do not allow you to do this or you passed the wrong rights combination (some rights only apply to channels and vice versa) (caused by EditAdminRequest). Adicione o bot manualmente.
+[22:47:47] INFO [MUTADOR_MESTRE.run_mutations:158]    -> [4/4] Cravação permanente da mensagem do topo...
+[22:47:47] WARNING [MUTADOR_MESTRE.run_mutations:169]    -> [4/4 AVISO] O seu texto ultrapassa os 1024 caracteres. Enviando Imagem e depois Texto.
+[22:47:47] INFO [telethon.client.uploads.upload_file:637] Uploading file of 903519 bytes in 7 chunks of 131072
+[22:47:50] INFO [telethon.client.updates._update_loop:442] Got difference for channel 3877813980 updates
+[22:47:56] INFO [data.io_manager.save_state:32] 💾 Memória térmica convertida em I/O: 31 alvos persistidos.
+[22:47:56] INFO [data.io_manager.save_production_group:68] 🔰 [PRODUÇÃO] Chat exportado para produção: 🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗕𝟬𝟮］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙.
+[22:47:56] INFO [MUTADOR_MESTRE.run_mutations:197] ✅ CONCLUÍDO: [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗕𝟬𝟮］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙] blindado com sucesso e status salvo no disco.
+[22:47:57] INFO [telethon.client.updates._update_loop:442] Got difference for channel 3877813980 updates
+[22:48:35] DEBUG [asyncio.__init__:634] Using proactor: IocpProactor
+[22:48:35] DEBUG [asyncio.__init__:634] Using proactor: IocpProactor
+[22:48:35] INFO [telethon.network.mtprotosender._connect:228] Connecting to 149.154.175.60:443/TcpFull...
+[22:48:35] INFO [telethon.network.mtprotosender._connect:279] Connection to 149.154.175.60:443/TcpFull complete!
+[22:48:37] INFO [MUTADOR_MESTRE.run_mutations:63] 🔌 [MUTADOR FRONTAL] Conexão consolidada.
+[22:48:37] INFO [MUTADOR_MESTRE.run_mutations:77] 🔵 Foto alocada na memória...
+[22:48:37] INFO [telethon.client.uploads.upload_file:637] Uploading file of 583623 bytes in 5 chunks of 131072
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1003489411758] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1002940339337] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1001703477686] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1001469418142] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1002008732287] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1001947328960] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1003862083226] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1003860315215] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1003744667437] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1003836119185] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1003841747304] - Já consta como MUTADO no snapshot.
+[22:48:39] INFO [MUTADOR_MESTRE.run_mutations:102] ⏭️ Pulando ID [-1003877813980] - Já consta como MUTADO no snapshot.
+[22:48:40] INFO [MUTADOR_MESTRE.run_mutations:111] ⚡ Disparando rotina para Chat Absoluto O(1): [🕵️‍♂️ 𝗩Λ𝗥𝗥𝗘𝗗𝗨𝗥Λ 𝗚𝗥Λ́𝗧𝗜𝗦 ［#𝗕𝟬𝟯］ ⚡️ 〘 𝗜Λ 𝗗𝗘𝗧𝗘𝗧𝗜𝗩𝗘 〙]
+[22:48:40] INFO [MUTADOR_MESTRE.run_mutations:114]    -> [1/4] Aniquilando resíduos anteriores...
+[22:48:41] INFO [MUTADOR_MESTRE.run_mutations:119]    -> [2/4] Sobrescrevendo Título, Descrição e Foto...
+[22:48:41] INFO [telethon.client.users._call:116] Sleeping for 807s (0:13:27) on EditPhotoRequest flood wait
