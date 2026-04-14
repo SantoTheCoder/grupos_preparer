@@ -11,7 +11,8 @@ from typing import Dict, Any, Optional
 
 from aiocache import cached, Cache
 from aiogram import Bot, Dispatcher, F, types
-from aiogram.enums import ChatType, MessageEntityType
+from aiogram.enums import ChatType, MessageEntityType, ContentType
+from broadcaster_aiogram import cron_broadcaster
 from aiogram.exceptions import TelegramBadRequest
 from dotenv import load_dotenv
 
@@ -50,6 +51,21 @@ dp = Dispatcher()
 log_queue = asyncio.Queue()
 ANONYMOUS_ADMIN_ID = 1087968824
 EMAIL_ONLY_REGEX = re.compile(r"^\s*[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\s*$")
+
+# --- Módulo Zelador: Autolimpador de Sujeiras Visuais ---
+@dp.message(F.content_type.in_({
+    ContentType.NEW_CHAT_MEMBERS,
+    ContentType.LEFT_CHAT_MEMBER,
+    ContentType.PINNED_MESSAGE,
+    ContentType.NEW_CHAT_TITLE,
+    ContentType.NEW_CHAT_PHOTO
+}))
+async def zelador_clean_service_messages(message: types.Message):
+    """Destrói mensagens de sistema para manter o design Glassmorphism do grupo limpo."""
+    try:
+        await message.delete()
+    except Exception:
+        pass
 
 # --- Módulo de Log de Auditoria Desacoplado ---
 async def log_processor_task(bot: Bot):
@@ -309,6 +325,13 @@ async def main():
     if LOG_CHANNEL_ID:
         asyncio.create_task(log_processor_task(bot))
         logging.info("Tarefa de processamento de logs iniciada.")
+
+    # [INJEÇÃO ZELADOR] Agregando Motor de Disparo Automático Condicional
+    if os.getenv("ENABLE_BROADCASTER", "OFF").upper() == "ON":
+        logging.info("Rotina de Disparos em Massa Automáticos (Zelador) acoplada e ativada no background.")
+        asyncio.create_task(cron_broadcaster(bot))
+    else:
+        logging.info("Atenção: A rotina de disparos automáticos massivos do Zelador está DESLIGADA no .env.")
 
     logging.info("Iniciando o bot Vigia em modo de polling...")
     try:
