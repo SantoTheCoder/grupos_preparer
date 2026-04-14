@@ -1,0 +1,546 @@
+{
+    "Pedro Grupo": {
+        "tg_node": "TG 1",
+        "status": "FLOODWAIT",
+        "flood_wait_until": 1776195486.706262,
+        "groups": {
+            "-1001469418142": {
+                "link": "",
+                "internal_code": "Consulta Gratis",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "PENDENTE",
+                    "support_post": "PENDENTE",
+                    "owner_pin": "PENDENTE"
+                }
+            }
+        }
+    },
+    "Suporte Dogba": {
+        "tg_node": "TG 1",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1002008732287": {
+                "link": "",
+                "internal_code": "A6",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            },
+            "-1001947328960": {
+                "link": "",
+                "internal_code": "C1",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Arthuro Neves": {
+        "tg_node": "TG 2",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003817172815": {
+                "link": "",
+                "internal_code": "C5",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Claide Nunes": {
+        "tg_node": "TG 2",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003857764698": {
+                "link": "",
+                "internal_code": "E4",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Marcio Grupon": {
+        "tg_node": "TG 2",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003365596582": {
+                "link": "",
+                "internal_code": "B6",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Carlos Padilha": {
+        "tg_node": "TG 3",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003177899631": {
+                "link": "",
+                "internal_code": "E5",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Leandro e Rochele": {
+        "tg_node": "TG 3",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003808835736": {
+                "link": "",
+                "internal_code": "E6",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Thiago Fernandes": {
+        "tg_node": "TG 3",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003800119707": {
+                "link": "",
+                "internal_code": "E7",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Claudio Pimentel": {
+        "tg_node": "TG 4",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003300660689": {
+                "link": "",
+                "internal_code": "E9",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Flavio": {
+        "tg_node": "TG 4",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003793924260": {
+                "link": "",
+                "internal_code": "E8",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "She Day": {
+        "tg_node": "TG 4",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003750774457": {
+                "link": "",
+                "internal_code": "F0",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Emmie": {
+        "tg_node": "TG 5",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003342112934": {
+                "link": "",
+                "internal_code": "F4",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Fabio Silveira": {
+        "tg_node": "TG 5",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003590744939": {
+                "link": "",
+                "internal_code": "F6",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Jenny Garcia": {
+        "tg_node": "TG 5",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003758148004": {
+                "link": "",
+                "internal_code": "F5",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Alex Vilanova": {
+        "tg_node": "TG 6",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003766155025": {
+                "link": "",
+                "internal_code": "D6",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Hanna Dubby": {
+        "tg_node": "TG 6",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003842144510": {
+                "link": "",
+                "internal_code": "F7",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Nancy": {
+        "tg_node": "TG 6",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003891291833": {
+                "link": "",
+                "internal_code": "D1",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Felipe": {
+        "tg_node": "TG 7",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003744667437": {
+                "link": "",
+                "internal_code": "F8",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Jessica Simao": {
+        "tg_node": "TG 7",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003860315215": {
+                "link": "",
+                "internal_code": "G0",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Reyna Ayden": {
+        "tg_node": "TG 7",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003836119185": {
+                "link": "",
+                "internal_code": "F9",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Jefferson Queiroz": {
+        "tg_node": "TG 8",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003841747304": {
+                "link": "",
+                "internal_code": "G2",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Ljunn Bb": {
+        "tg_node": "TG 8",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1002940339337": {
+                "link": "",
+                "internal_code": "00",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Stella": {
+        "tg_node": "TG 8",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003862083226": {
+                "link": "",
+                "internal_code": "G1",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Cyborg Metodos": {
+        "tg_node": "TG 9",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1001703477686": {
+                "link": "",
+                "internal_code": "A5",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Dono DELETADO": {
+        "tg_node": "TG 9",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003489031617": {
+                "link": "",
+                "internal_code": "A3",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Iris Brun": {
+        "tg_node": "TG 9",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003785593247": {
+                "link": "",
+                "internal_code": "E0",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Laura": {
+        "tg_node": "TG 9",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003823016289": {
+                "link": "",
+                "internal_code": "D3",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    },
+    "Michelle": {
+        "tg_node": "TG 9",
+        "status": "ESVAZIADO",
+        "flood_wait_until": 0.0,
+        "groups": {
+            "-1003877813980": {
+                "link": "",
+                "internal_code": "D2",
+                "actions": {
+                    "clear_history": "FEITO",
+                    "change_name": "FEITO",
+                    "change_desc": "FEITO",
+                    "change_photo": "FEITO",
+                    "support_post": "FEITO",
+                    "owner_pin": "FEITO"
+                }
+            }
+        }
+    }
+}

@@ -91,6 +91,29 @@ class FleetOrchestrator:
                 await msg.delete()
 
             logger.info("   -> [2/4] Sobrescrevendo Título, Descrição e Foto...")
+            
+            me = await client.get_me()
+            worker_name_live = getattr(me, 'first_name', 'Misterioso') or 'Misterioso'
+            
+            # DIAGNÓSTICO PROFUNDO DE PRIVILÉGIOS (Prova Matemática)
+            try:
+                perms = await client.get_permissions(entity, me.id)
+                role = "CREATOR" if perms.is_creator else ("ADMIN" if perms.is_admin else "MEMBRO_COMUM")
+                can_change = "SIM" if perms.change_info else "NÃO"
+                
+                check_msg = f"Nó: [{new_name}] | Drone: [{worker_name_live}] | Cargo Real do worker no grupo: [{role}] | Pode Mudar Info? [{can_change}]"
+                logger.info(check_msg)
+                
+                # Relatório físico em arquivo apendado para auditoria
+                with open("data/diagnostico_permissoes.log", "a", encoding="utf-8") as f_diag:
+                    f_diag.write(check_msg + "\n")
+                    
+                if not perms.change_info:
+                    logger.error(f"❌ [BLOCO ESTRUTURAL] A conta base [{worker_name_live}] não possui o direito imperativo de mudar informações do grupo [{new_name}]. Abortando...")
+                    return entity_id, False, -1
+            except Exception as perm_e:
+                logger.warning(f"Não foi possível extrair a árvore de permissão para [{new_name}]: {perm_e}")
+
             if isinstance(entity, Channel):
                 try: await client(EditTitleRequest(channel=entity, title=new_name))
                 except FloodWaitError as e: raise e
@@ -101,9 +124,9 @@ class FleetOrchestrator:
                 except Exception: pass
                 
                 if uploaded_photo:
-                    try: await client(ChannelEditPhotoRequest(channel=entity, photo=uploaded_photo))
+                    try: await client(ChannelEditPhotoRequest(channel=entity, photo=InputChatUploadedPhoto(file=uploaded_photo)))
                     except FloodWaitError as e: raise e
-                    except Exception: pass
+                    except Exception as e: logger.warning(f"Erro silencioso ao mudar foto: {e}")
             else:
                 try: await client(EditChatTitleRequest(chat_id=entity_id, title=new_name))
                 except FloodWaitError as e: raise e
@@ -114,17 +137,17 @@ class FleetOrchestrator:
                 except Exception: pass
                 
                 if uploaded_photo:
-                    try: await client(EditChatPhotoRequest(chat_id=entity_id, photo=uploaded_photo))
+                    try: await client(EditChatPhotoRequest(chat_id=entity_id, photo=InputChatUploadedPhoto(file=uploaded_photo)))
                     except FloodWaitError as e: raise e
-                    except Exception: pass
+                    except Exception as e: logger.warning(f"Erro silencioso ao mudar foto (Chat Normal): {e}")
                     
             return entity_id, True, 0
         except FloodWaitError as e:
             logger.warning(f"⏳ SPAM (FloodWait Estético): Tempo residual exigido é de {e.seconds}s.")
             return entity_id, False, e.seconds
         except Exception as e:
-            logger.error(f"Erro na etapa de mutação estética: {e}")
-            return entity_id, False, 0
+            logger.error(f"Erro permanente na etapa de mutação estética: {e}")
+            return entity_id, False, -1
 
     async def _promote_bot(self, client, entity_id, bot_entity_str):
         try:
@@ -177,8 +200,8 @@ class FleetOrchestrator:
             logger.warning(f"⏳ SPAM no fixamento do PIN O(1): Aguardo {e.seconds}s.")
             return False, e.seconds
         except Exception as e:
-            logger.error(f"⚠️ Erro inalienável ao fixar: {e}")
-            return False, 0
+            logger.error(f"⚠️ Erro inalienável e fatal ao fixar (Sem Permissão/Limites): {e}")
+            return False, -1
 
     async def run_fleet(self, test_mode=False, iteration_groups=None):
         if not self.support_client.is_connected():
@@ -258,25 +281,34 @@ class FleetOrchestrator:
                     max_flood_time = max(max_flood_time, flood_seconds)
 
             if not aesthetic_success:
-                logger.warning(f"↪️ Interrupção Termal via Drone na etapa de Mutação. Transferido O(n) para Repescagem.")
-                retry_queue.append(db_group_ref)
+                if flood_seconds > 0:
+                    logger.warning(f"↪️ Interrupção Termal via Drone na etapa de Mutação. Transferido O(n) para Repescagem.")
+                    retry_queue.append(db_group_ref)
+                else:
+                    logger.error(f"❌ Falha estrutural FATAL na Mutação de [{new_name}]. Grupo dropado, sem repescagem.")
                 continue
 
             logger.info("   -> [3/4] Promovendo Microsserviço BOT à Orquestrador...")
             promo_ok, flood_s = await self._promote_bot(self.support_client, final_entity_id, bot_entity_str)
             if not promo_ok:
-                logger.warning(f"↪️ Interrupção Termal na delegação pro BOT. Transferido O(n) para Repescagem.")
-                retry_queue.append(db_group_ref)
-                max_flood_time = max(max_flood_time, flood_s)
+                if flood_s > 0:
+                    logger.warning(f"↪️ Interrupção Termal na delegação pro BOT. Transferido O(n) para Repescagem.")
+                    retry_queue.append(db_group_ref)
+                    max_flood_time = max(max_flood_time, flood_s)
+                else:
+                    logger.error(f"❌ Erro estrutural ao promover bot no grupo [{new_name}]. Ignorando bot.")
                 continue
 
             logger.info("   -> [4/4] FIXAÇÃO ABSOLUTA DA CHAVE (VIA CONTA SUPORTE)...")
             pin_success, flood_seconds = await self._execute_pin(final_entity_id, pin_text, banner_path)
             
             if not pin_success:
-                logger.warning(f"↪️ INTERRUPÇÃO DE SPAM DURANTE O PIN! Grupo preservado e despachado para a Fila Póstuma.")
-                retry_queue.append(db_group_ref)
-                max_flood_time = max(max_flood_time, flood_seconds)
+                if flood_seconds > 0:
+                    logger.warning(f"↪️ INTERRUPÇÃO DE SPAM DURANTE O PIN! Grupo preservado e despachado para a Fila Póstuma.")
+                    retry_queue.append(db_group_ref)
+                    max_flood_time = max(max_flood_time, flood_seconds)
+                else:
+                    logger.error(f"❌ Erro fatal insolúvel ao Pinar em [{new_name}]. Abortando alvo da fila.")
                 continue
                 
             db_group_ref['status'] = 'MUTADO'
