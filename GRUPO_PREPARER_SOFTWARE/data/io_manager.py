@@ -38,6 +38,14 @@ class PersistenceManager:
                 return json.load(f)
         return []
 
+    def load_production_state(self) -> list[dict]:
+        """Acesso estrito de Leitura do Zelador. Lê apenas os grupos blindados Ouro."""
+        prod_path = os.path.join(DATA_DIR, 'production_groups.json')
+        if os.path.exists(prod_path):
+            with open(prod_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return []
+
     def save_production_group(self, group_id: int, name: str, link: str):
         """Salva cumulativamente os grupos blindados no formato estrito de Produção."""
         prod_path = os.path.join(DATA_DIR, 'production_groups.json')

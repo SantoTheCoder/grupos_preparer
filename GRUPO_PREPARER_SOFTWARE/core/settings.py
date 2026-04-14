@@ -14,9 +14,16 @@ class Settings(BaseSettings):
     PHONE: str
     BOT_TOKEN: str
     
-    # Ingestão de Modificadores:
+    # Ingestão de Modificadores (Fase 3):
     BOT_USERNAME: str
     AVATAR_PATH: str
+
+    # Orquestrador Zelador (Fase 4):
+    BROADCAST_INTERVAL_MINUTES: int = 120
+    ENABLE_SERVICE_CLEANER: bool = True
+    DELETE_OLD_BROADCAST: bool = True
+    BUTTON_TEXT: str = "Acessar Sistema"
+    BUTTON_URL: str = "https://t.me/seu_link"
 
     class Config:
         env_file = ENV_FILE_PATH

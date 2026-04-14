@@ -53,7 +53,8 @@ class GroupMutator:
             system_version="Windows 11",
             app_version="4.10.3",
             lang_code="pt-br",
-            system_lang_code="pt-br"
+            system_lang_code="pt-br",
+            flood_sleep_threshold=99999999 # OBRIGA o Telethon a dormir e re-tentar ao invés de abortar no RateLimit
         )
         self.persistence = PersistenceManager()
 
@@ -181,8 +182,6 @@ class GroupMutator:
                     
                 try:
                     await self.client.pin_message(entity_id, msg_to_pin.id, notify=True)
-                except FloodWaitError as e:
-                    logger.warning(f"   -> [4/4 AVISO] Telegram impôs limite Anti-Spam de {e.seconds}s apenas para fixação neste grupo. Prosseguindo...")
                 except Exception as e:
                     if "not modified" not in str(e).lower() and "not changed" not in str(e).lower():
                         logger.warning(f"   -> [4/4 AVISO] Não foi possível fixar: {e}")
