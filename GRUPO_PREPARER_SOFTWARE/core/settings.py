@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     API_HASH: str
     PHONE: str
     BOT_TOKEN: str
+    
+    # Ingestão de Modificadores:
+    BOT_USERNAME: str
+    AVATAR_PATH: str
 
     class Config:
         env_file = ENV_FILE_PATH
@@ -23,7 +27,6 @@ config = Settings()
 
 # --- Drenagem de Infraestrutura Física ---
 # Garante a existência do estado persistente (I/O) antes de disparar EventLoops
-BASE_DIR = os.getcwd()
 SESSION_DIR = os.path.join(BASE_DIR, 'sessions')
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 
