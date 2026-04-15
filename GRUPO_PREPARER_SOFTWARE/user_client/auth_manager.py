@@ -16,7 +16,8 @@ telethon.network.mtprotostate.MSG_TOO_OLD_DELTA = 999999999
 telethon.network.mtprotostate.MSG_TOO_NEW_DELTA = 999999999
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, 'data')
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+DATA_DIR = os.path.join(PROJECT_ROOT, 'data')
 SESSIONS_DIR = os.path.join(BASE_DIR, 'sessions')
 
 os.makedirs(SESSIONS_DIR, exist_ok=True)
