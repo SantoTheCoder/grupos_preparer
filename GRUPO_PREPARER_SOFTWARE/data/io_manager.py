@@ -14,7 +14,6 @@ class PersistenceManager:
         self.accounts_path = config.accounts_file
         self.queue_path = config.group_queue_file
         self.database_path = config.group_database_file
-        self.production_path = config.production_groups_file
         self.gift_state_path = config.gift_injection_state_file
 
     def _read_json(self, path: str, default: Any):
@@ -75,22 +74,6 @@ class PersistenceManager:
 
         groups.append(record)
         self.save_group_database(groups)
-
-    def load_production_state(self) -> list[dict]:
-        return self._read_json(self.production_path, [])
-
-    def save_production_group(self, group_id: int, name: str, link: str):
-        data = self.load_production_state()
-
-        for entry in data:
-            if entry.get("ID") == group_id:
-                entry["NOME"] = name
-                entry["LINK"] = link
-                self._write_json(self.production_path, data)
-                return
-
-        data.append({"NOME": name, "LINK": link, "ID": group_id})
-        self._write_json(self.production_path, data)
 
     def save_gift_state(self, state: dict):
         self._write_json(self.gift_state_path, state)

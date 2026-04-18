@@ -31,15 +31,10 @@ class Settings(BaseSettings):
     DRONE_ACCOUNTS_PATH: str = "data/accounts_mapping.json"
     GROUP_QUEUE_PATH: str = "data/group_seed_queue.json"
     GROUP_DATABASE_PATH: str = "data/database_grupos.json"
-    PRODUCTION_GROUPS_PATH: str = "data/production_groups.json"
     GIFT_INJECTION_STATE_PATH: str = "data/gift_injection_state.json"
 
     GIFT_VALUE: int = 500
-    BROADCAST_INTERVAL_MINUTES: int = 120
     ENABLE_SERVICE_CLEANER: bool = True
-    DELETE_OLD_BROADCAST: bool = True
-    BUTTON_TEXT: str = "Acessar Sistema"
-    BUTTON_URL: str = "https://t.me/seu_link"
 
     class Config:
         env_file = ENV_FILE_PATH
@@ -72,10 +67,6 @@ class Settings(BaseSettings):
     @property
     def group_database_file(self) -> str:
         return _resolve_path(self.GROUP_DATABASE_PATH)
-
-    @property
-    def production_groups_file(self) -> str:
-        return _resolve_path(self.PRODUCTION_GROUPS_PATH)
 
     @property
     def gift_injection_state_file(self) -> str:

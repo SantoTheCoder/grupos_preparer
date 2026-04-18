@@ -323,7 +323,6 @@ class GroupPipeline:
                 "updated_at": utc_now(),
             }
             self.persistence.upsert_group_record(final_record)
-            self.persistence.save_production_group(group_id, task["group_name"], invite_link)
             await self._update_gift_state(final_record, gift_code)
             self._save_task_status(
                 index,

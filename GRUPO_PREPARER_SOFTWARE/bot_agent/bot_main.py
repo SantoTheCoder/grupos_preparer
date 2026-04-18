@@ -8,7 +8,6 @@ from telethon import TelegramClient
 
 from core.settings import config, SESSION_DIR, BASE_DIR
 from bot_agent.modules.cleaner import get_cleaner_handler
-from bot_agent.modules.broadcaster import cron_broadcaster
 
 # Motor de Observabilidade Absoluta (Tracing Bot)
 log_file = os.path.join(BASE_DIR, 'debug_bot.log')
@@ -43,10 +42,6 @@ async def main():
     client.add_event_handler(get_cleaner_handler())
     logger.info("   -> Protocolo Scanner: LIGADO (Filtro Anti-Serviço Ativo)")
 
-    # 2. Emite o Broadcaster Assíncrono para o fundo do Kernel (Cron Job Loop)
-    logger.info("   -> Protocolo Broadcaster: LIGADO (Atirador Acordado)")
-    asyncio.create_task(cron_broadcaster(client))
-    
     # Trava o Main Loop (Fica rodando até o processo ser morto no CMD)
     logger.info("🧊 Kernel trancado em O(1). O bot está rodando e persistindo no background infinitamente...")
     await client.run_until_disconnected()

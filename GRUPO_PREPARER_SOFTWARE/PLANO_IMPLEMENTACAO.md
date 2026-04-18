@@ -25,7 +25,7 @@
 ### Master
 
 - Entra no grupo ja pronto.
-- Posta a mensagem fixada (`foto + texto`).
+- Posta a mensagem fixada (`foto + texto`) uma unica vez.
 - Fixa a mensagem.
 - Cria o gift.
 - Resgata/dispara o gift no grupo.
@@ -35,7 +35,7 @@
 - `@FiscalDoGrupoBot`.
 - Entra no final do fluxo.
 - Recebe admin.
-- Permanece com a funcao de manutencao posterior.
+- Permanece apenas como bot operacional do grupo, sem postagem recorrente automatica.
 
 ### Bot de Gift
 
@@ -70,7 +70,7 @@
    - fixar;
    - gerar e resgatar gift.
 5. Atualizar os JSONs finais com os dados reais do grupo.
-6. Manter o fluxo do bot de manutencao no final.
+6. Manter o bot no final sem rotina de postagem recorrente.
 
 ## Arquivos que devem mudar
 
