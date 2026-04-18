@@ -1,68 +1,109 @@
 import json
-import csv
-import os
 import logging
-from core.settings import DATA_DIR
+import os
+from typing import Any
+
+from core.settings import config
+
 
 logger = logging.getLogger(__name__)
 
+
 class PersistenceManager:
-    """I/O Frio. Salva o estado transacional dos canais mapeados minimizando batidas de disco."""
     def __init__(self):
-        self.json_path = os.path.join(DATA_DIR, 'groups_data.json')
-        self.csv_path = os.path.join(DATA_DIR, 'mapping.csv')
+        self.accounts_path = config.accounts_file
+        self.queue_path = config.group_queue_file
+        self.database_path = config.group_database_file
+        self.production_path = config.production_groups_file
+        self.gift_state_path = config.gift_injection_state_file
 
-    def save_state(self, groups: list[dict]):
-        """
-        Consolida a matriz de dados [ID x Link x Nome Antigo x Novo Nome]
-        Groups é uma listagem em memória injetada diretamente via dump atômico.
-        """
-        # Commit JSON primário para leitura do Bot
-        with open(self.json_path, 'w', encoding='utf-8') as f:
-            json.dump(groups, f, indent=4, ensure_ascii=False)
-        
-        # Branch CSV para debug/humano (isolamento documental)
-        if groups:
-            keys = groups[0].keys()
-            with open(self.csv_path, 'w', encoding='utf-8', newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=keys)
-                writer.writeheader()
-                writer.writerows(groups)
-        
-        logger.info(f"💾 Memória térmica convertida em I/O: {len(groups)} alvos persistidos.")
+    def _read_json(self, path: str, default: Any):
+        if not os.path.exists(path):
+            return default
 
-    def load_state(self) -> list[dict]:
-        """Recupera o mapeamento salvo para orquestradores secundários (Bots/Mutators)."""
-        if os.path.exists(self.json_path):
-            with open(self.json_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        return []
+        try:
+            with open(path, "r", encoding="utf-8") as file_obj:
+                return json.load(file_obj)
+        except (OSError, json.JSONDecodeError):
+            logger.warning("Falha ao ler %s. Usando valor padrao.", path)
+            return default
+
+    def _write_json(self, path: str, data: Any):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as file_obj:
+            json.dump(data, file_obj, indent=4, ensure_ascii=False)
+
+    def load_accounts(self) -> list[dict]:
+        return self._read_json(self.accounts_path, [])
+
+    def save_accounts(self, accounts: list[dict]):
+        self._write_json(self.accounts_path, accounts)
+
+    def load_seed_queue(self) -> list[dict]:
+        return self._read_json(self.queue_path, [])
+
+    def save_seed_queue(self, groups: list[dict]):
+        self._write_json(self.queue_path, groups)
+
+    def load_group_database(self) -> list[dict]:
+        return self._read_json(self.database_path, [])
+
+    def save_group_database(self, groups: list[dict]):
+        self._write_json(self.database_path, groups)
+
+    def upsert_group_record(self, record: dict):
+        groups = self.load_group_database()
+        group_id = record.get("group_id")
+        internal_code = record.get("internal_code")
+        owner = record.get("owner")
+
+        for index, existing in enumerate(groups):
+            if group_id and existing.get("group_id") == group_id:
+                groups[index] = {**existing, **record}
+                self.save_group_database(groups)
+                return
+
+            if (
+                internal_code
+                and owner
+                and existing.get("internal_code") == internal_code
+                and existing.get("owner") == owner
+            ):
+                groups[index] = {**existing, **record}
+                self.save_group_database(groups)
+                return
+
+        groups.append(record)
+        self.save_group_database(groups)
 
     def load_production_state(self) -> list[dict]:
-        """Acesso estrito de Leitura do Zelador. Lê apenas os grupos blindados Ouro."""
-        prod_path = os.path.join(DATA_DIR, 'production_groups.json')
-        if os.path.exists(prod_path):
-            with open(prod_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        return []
+        return self._read_json(self.production_path, [])
 
     def save_production_group(self, group_id: int, name: str, link: str):
-        """Salva cumulativamente os grupos blindados no formato estrito de Produção."""
-        prod_path = os.path.join(DATA_DIR, 'production_groups.json')
-        data = []
-        if os.path.exists(prod_path):
-            try:
-                with open(prod_path, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-            except Exception:
-                pass
-            
-        if not any(g.get("ID") == group_id for g in data):
-            data.append({
-                "NOME": name,
-                "LINK": link,
-                "ID": group_id
-            })
-            with open(prod_path, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=4, ensure_ascii=False)
-            logger.info(f"🔰 [PRODUÇÃO] Chat exportado para produção: {name}.")
+        data = self.load_production_state()
+
+        for entry in data:
+            if entry.get("ID") == group_id:
+                entry["NOME"] = name
+                entry["LINK"] = link
+                self._write_json(self.production_path, data)
+                return
+
+        data.append({"NOME": name, "LINK": link, "ID": group_id})
+        self._write_json(self.production_path, data)
+
+    def save_gift_state(self, state: dict):
+        self._write_json(self.gift_state_path, state)
+
+    def load_gift_state(self) -> dict:
+        return self._read_json(
+            self.gift_state_path,
+            {"version": 1, "groups": {}, "generated_codes": {}},
+        )
+
+    # Wrappers de compatibilidade para scripts antigos ainda presentes no repo.
+    def save_state(self, groups: list[dict]):
+        self.save_group_database(groups)
+
+    def load_state(self) -> list[dict]:
+        return self.load_group_database()

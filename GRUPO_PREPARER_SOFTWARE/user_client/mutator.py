@@ -1,346 +1,378 @@
-import sys
-import os
-import re
-import json
-import random
-import logging
-import asyncio
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from telethon import TelegramClient
-from telethon.tl.types import Chat, Channel, InputChatUploadedPhoto, ChatAdminRights
-from telethon.tl.functions.channels import EditAdminRequest, EditTitleRequest, EditPhotoRequest as ChannelEditPhotoRequest
-from telethon.tl.functions.messages import EditChatAboutRequest, EditChatTitleRequest, EditChatPhotoRequest
-from telethon.errors.rpcerrorlist import ChatNotModifiedError, FloodWaitError
-from core.settings import config, SESSION_DIR, BASE_DIR, DATA_DIR
-from data.io_manager import PersistenceManager
 import argparse
+import asyncio
+import logging
+import os
+import random
+import re
+import sys
+from datetime import datetime, timezone
 
-if hasattr(sys.stdout, 'reconfigure'):
-    sys.stdout.reconfigure(encoding='utf-8')
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import telethon.network.mtprotostate
+from telethon import TelegramClient
+from telethon import utils
+from telethon.errors.rpcerrorlist import FloodWaitError
+from telethon.tl.functions.channels import (
+    CreateChannelRequest,
+    EditAdminRequest,
+    EditPhotoRequest as ChannelEditPhotoRequest,
+    InviteToChannelRequest,
+)
+from telethon.tl.functions.contacts import ImportContactsRequest
+from telethon.tl.functions.messages import ExportChatInviteRequest
+from telethon.tl.types import ChatAdminRights, InputChatUploadedPhoto, InputPhoneContact
+
+from core.settings import BASE_DIR, DATA_DIR, SESSION_DIR, config
+from data.io_manager import PersistenceManager
+
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 telethon.network.mtprotostate.MSG_TOO_OLD_DELTA = 999999999
 telethon.network.mtprotostate.MSG_TOO_NEW_DELTA = 999999999
 
-log_file = os.path.join(BASE_DIR, 'debug_mutator.log')
-logging.basicConfig(level=logging.DEBUG,
+
+log_file = os.path.join(BASE_DIR, "debug_mutator.log")
+logging.basicConfig(
+    level=logging.INFO,
     format="[%(asctime)s] %(levelname)s [%(name)s:%(lineno)d] %(message)s",
     datefmt="%H:%M:%S",
-    handlers=[logging.FileHandler(log_file, encoding='utf-8', mode='a'), logging.StreamHandler(sys.stdout)])
-logging.getLogger('telethon').setLevel(logging.INFO)
-logger = logging.getLogger("ORQUESTRA_MESTRE")
+    handlers=[
+        logging.FileHandler(log_file, encoding="utf-8", mode="a"),
+        logging.StreamHandler(sys.stdout),
+    ],
+)
+logging.getLogger("telethon").setLevel(logging.INFO)
+logger = logging.getLogger("NOVO_PIPELINE")
 
-class FleetOrchestrator:
+DRONE_SESSION_DIR = os.path.join(BASE_DIR, "user_client", "sessions")
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+class GroupPipeline:
     def __init__(self):
-        support_session = os.path.join(SESSION_DIR, 'user_account.session')
-        self.support_client = TelegramClient(support_session, config.API_ID, config.API_HASH, 
-                                             device_model="Desktop Windows", flood_sleep_threshold=0) # Must be 0 to catch and bypass
+        master_session = os.path.join(SESSION_DIR, "user_account.session")
+        self.master = TelegramClient(
+            master_session,
+            config.API_ID,
+            config.API_HASH,
+            device_model="Desktop Windows",
+            flood_sleep_threshold=0,
+        )
         self.persistence = PersistenceManager()
-        
-        self.accounts_map = []
-        mapping_path = os.path.join(DATA_DIR, 'accounts_mapping.json')
-        if os.path.exists(mapping_path):
-            with open(mapping_path, 'r', encoding='utf-8') as f:
-                self.accounts_map = json.load(f)
+        self.accounts = self.persistence.load_accounts()
+        self.seed_queue = self.persistence.load_seed_queue()
+        self.admin_rights = ChatAdminRights(
+            change_info=True,
+            post_messages=True,
+            edit_messages=True,
+            delete_messages=True,
+            ban_users=True,
+            invite_users=True,
+            pin_messages=True,
+            manage_call=True,
+        )
 
-    def _extract_code(self, name):
-        replacements = {'𝗔':'A', '𝗕':'B', '𝗖':'C', '𝗗':'D', '𝗘':'E', '𝗙':'F', '𝗚':'G', '𝗛':'H', '𝗜':'I',
-                        '𝟬':'0', '𝟭':'1', '𝟮':'2', '𝟯':'3', '𝟰':'4', '𝟱':'5', '𝟲':'6', '𝟳':'7', '𝟴':'8', '𝟵':'9'}
-        clean_name = name
-        for k, v in replacements.items():
-            clean_name = clean_name.replace(k, v)
-        
-        match = re.search(r'#([A-Z0-9]{2,3})', clean_name)
-        if match:
-            return match.group(1)
-        return clean_name
+    async def _connect_master(self):
+        await self.master.connect()
+        if not await self.master.is_user_authorized():
+            await self.master.start(phone=config.PHONE)
+        logger.info("Master conectado com sucesso.")
 
-    def get_owner_for_group(self, new_name):
-        code = self._extract_code(new_name)
-        for acc in self.accounts_map:
-            for g in acc.get("groups", []):
-                if g == code or g in new_name or g in code:
-                    return acc
+    async def _connect_drone(self, account: dict) -> TelegramClient | None:
+        phone = account.get("phone")
+        api_id = account.get("api_id")
+        api_hash = account.get("api_hash")
+        session_path = os.path.join(DRONE_SESSION_DIR, f"{phone}.session")
+
+        if not os.path.exists(session_path):
+            logger.error("Sessao do drone nao encontrada: %s", phone)
+            return None
+
+        client = TelegramClient(session_path, api_id, api_hash, flood_sleep_threshold=0)
+        await client.connect()
+        if not await client.is_user_authorized():
+            logger.error("Sessao do drone nao esta autorizada: %s", phone)
+            await client.disconnect()
+            return None
+
+        return client
+
+    def _resolve_drone_account(self, task: dict) -> dict | None:
+        owner = task.get("owner")
+        phone = task.get("phone")
+
+        for account in self.accounts:
+            if phone and account.get("phone") == phone:
+                return account
+            if owner and account.get("name") == owner:
+                return account
+
         return None
 
-    async def _execute_aesthetic_mutations(self, client, entity_id, new_name, uploaded_photo, new_about):
-        try:
-            proper_id = entity_id
-            if not str(entity_id).startswith('-100'):
-                proper_id = int(f"-100{entity_id}")
+    def _read_text_file(self, path: str) -> str:
+        if not os.path.exists(path):
+            return ""
+        with open(path, "r", encoding="utf-8") as file_obj:
+            return file_obj.read().strip()
 
+    async def _wait_flood(self, error: FloodWaitError, context: str):
+        logger.warning("FloodWait em %s. Aguardando %ss.", context, error.seconds)
+        await asyncio.sleep(error.seconds + 2)
+
+    async def _ensure_contact(self, client: TelegramClient, phone: str, first_name: str):
+        try:
+            await client(
+                ImportContactsRequest(
+                    [
+                        InputPhoneContact(
+                            client_id=random.randint(1, 2**31 - 1),
+                            phone=phone,
+                            first_name=first_name or "Contato",
+                            last_name="",
+                        )
+                    ]
+                )
+            )
+        except FloodWaitError as error:
+            await self._wait_flood(error, f"importar contato {phone}")
+
+    async def _create_group(self, drone: TelegramClient, task: dict):
+        description = self._read_text_file(config.group_description_file)
+        response = await drone(
+            CreateChannelRequest(
+                title=task["group_name"],
+                about=description,
+                megagroup=True,
+            )
+        )
+        created_chat = response.chats[0]
+        entity = await drone.get_entity(created_chat)
+
+        if os.path.exists(config.avatar_file):
+            uploaded = await drone.upload_file(config.avatar_file)
+            await drone(
+                ChannelEditPhotoRequest(
+                    channel=entity,
+                    photo=InputChatUploadedPhoto(file=uploaded),
+                )
+            )
+
+        return entity
+
+    async def _invite_and_promote_user(self, drone: TelegramClient, entity, user_ref, rank: str):
+        try:
+            await drone(InviteToChannelRequest(entity, [user_ref]))
+        except Exception as error:
+            if "already" not in str(error).lower():
+                raise
+
+        await drone(
+            EditAdminRequest(
+                channel=entity,
+                user_id=user_ref,
+                admin_rights=self.admin_rights,
+                rank=rank,
+            )
+        )
+
+    async def _invite_bot(self, drone: TelegramClient, entity, bot_username: str, rank: str):
+        bot_entity = await drone.get_input_entity(bot_username)
+        await self._invite_and_promote_user(drone, entity, bot_entity, rank)
+        return bot_entity
+
+    async def _extract_group_link(self, client: TelegramClient, entity) -> str:
+        try:
+            invite = await client(ExportChatInviteRequest(peer=entity))
+            return invite.link
+        except Exception:
+            return ""
+
+    async def _post_and_pin(self, group_id: int):
+        text = self._read_text_file(config.pinned_message_file)
+        if not text:
+            raise RuntimeError("Texto fixado nao encontrado.")
+
+        try:
+            target = await self.master.get_entity(group_id)
+        except Exception:
+            await self.master.get_dialogs(limit=50)
+            target = await self.master.get_entity(group_id)
+
+        if os.path.exists(config.banner_file):
             try:
-                entity = await client.get_entity(proper_id)
+                message = await self.master.send_file(
+                    target,
+                    config.banner_file,
+                    caption=text,
+                    parse_mode="html",
+                )
             except Exception:
-                await client.get_dialogs(limit=50) 
+                await self.master.send_file(target, config.banner_file)
+                message = await self.master.send_message(target, text, parse_mode="html")
+        else:
+            message = await self.master.send_message(target, text, parse_mode="html")
+
+        await self.master.pin_message(target, message.id, notify=True)
+        return message.id
+
+    async def _generate_gift_code(self) -> str:
+        await self.master.send_message(config.GIFT_BOT_USERNAME, f"/gift {config.GIFT_VALUE}")
+        await asyncio.sleep(2)
+
+        async for message in self.master.iter_messages(config.GIFT_BOT_USERNAME, limit=5):
+            if message.out:
+                continue
+
+            text = message.text or ""
+            match = re.search(r"Codigo:\s*([A-Z0-9\-]+)", text, re.IGNORECASE)
+            if not match:
+                match = re.search(r"Código:\s*([A-Z0-9\-]+)", text, re.IGNORECASE)
+            if match:
+                return match.group(1)
+
+        raise RuntimeError("Nao foi possivel extrair o codigo do gift.")
+
+    async def _redeem_gift(self, group_id: int, gift_code: str):
+        target = await self.master.get_entity(group_id)
+        await self.master.send_message(target, f"/resgatar_gift {gift_code}")
+
+    async def _update_gift_state(self, record: dict, gift_code: str):
+        state = self.persistence.load_gift_state()
+        group_key = str(record["group_id"])
+        timestamp = utc_now()
+
+        state.setdefault("groups", {})[group_key] = {
+            "owner": record.get("owner", ""),
+            "phone": record.get("phone", ""),
+            "code": gift_code,
+            "status": "DONE",
+            "done_at": timestamp,
+            "generated_at": timestamp,
+        }
+        state.setdefault("generated_codes", {})[gift_code] = {
+            "group_id": record["group_id"],
+            "owner": record.get("owner", ""),
+            "phone": record.get("phone", ""),
+            "generated_at": timestamp,
+            "status": "DONE",
+            "done_at": timestamp,
+        }
+        self.persistence.save_gift_state(state)
+
+    def _save_task_status(self, index: int, updates: dict):
+        self.seed_queue[index] = {**self.seed_queue[index], **updates}
+        self.persistence.save_seed_queue(self.seed_queue)
+
+    async def _process_task(self, index: int, task: dict):
+        if task.get("status") == "READY":
+            return
+
+        account = self._resolve_drone_account(task)
+        if not account:
+            raise RuntimeError(f"Drone nao encontrado para tarefa: {task}")
+
+        drone = await self._connect_drone(account)
+        if drone is None:
+            raise RuntimeError(f"Sessao do drone indisponivel: {account.get('phone')}")
+
+        try:
+            logger.info("Criando grupo [%s] pelo drone [%s].", task["group_name"], account.get("name"))
+
+            await self._ensure_contact(drone, config.PHONE, "Master")
+            await self._ensure_contact(self.master, account["phone"], account.get("name", "Drone"))
+
+            entity = await self._create_group(drone, task)
+            master_entity = await drone.get_input_entity(config.PHONE)
+
+            await self._invite_and_promote_user(drone, entity, master_entity, "Master")
+            await self._invite_bot(drone, entity, config.FISCAL_BOT_USERNAME, "Fiscal")
+            await self._invite_bot(drone, entity, config.GIFT_BOT_USERNAME, "Gift")
+
+            group_id = utils.get_peer_id(entity)
+            invite_link = await self._extract_group_link(drone, entity)
+            record = {
+                "owner": account.get("name", ""),
+                "phone": account.get("phone", ""),
+                "internal_code": task.get("internal_code", ""),
+                "group_name": task["group_name"],
+                "group_id": group_id,
+                "invite_link": invite_link,
+                "master_added": True,
+                "fiscal_bot_added": True,
+                "gift_bot_added": True,
+                "status": "DRONE_READY",
+                "updated_at": utc_now(),
+            }
+            self.persistence.upsert_group_record(record)
+
+            pinned_message_id = await self._post_and_pin(group_id)
+            gift_code = await self._generate_gift_code()
+            await self._redeem_gift(group_id, gift_code)
+
+            final_record = {
+                **record,
+                "pinned_message_id": pinned_message_id,
+                "gift_code": gift_code,
+                "status": "READY",
+                "updated_at": utc_now(),
+            }
+            self.persistence.upsert_group_record(final_record)
+            self.persistence.save_production_group(group_id, task["group_name"], invite_link)
+            await self._update_gift_state(final_record, gift_code)
+            self._save_task_status(
+                index,
+                {
+                    "status": "READY",
+                    "group_id": group_id,
+                    "invite_link": invite_link,
+                    "updated_at": utc_now(),
+                },
+            )
+            logger.info("Grupo [%s] concluido no novo fluxo.", task["group_name"])
+        finally:
+            await drone.disconnect()
+
+    async def run(self, test_mode: bool = False):
+        if not self.seed_queue:
+            logger.warning("Fila de grupos vazia. Preencha data/group_seed_queue.json.")
+            return
+
+        await self._connect_master()
+
+        try:
+            for index, task in enumerate(self.seed_queue):
                 try:
-                    entity = await client.get_entity(proper_id)
-                except Exception as e:
-                    logger.error(f"Erro fatal: Conta de Mutação NÃO ESTÁ O GRUPO: {e}")
-                    return entity_id, False, 0
-                    
-            if hasattr(entity, 'migrated_to') and entity.migrated_to is not None:
-                entity = await client.get_entity(entity.migrated_to)
-                
-            entity_id = entity.id
+                    await self._process_task(index, task)
+                except FloodWaitError as error:
+                    await self._wait_flood(error, task.get("group_name", "tarefa"))
+                except Exception as error:
+                    logger.error("Falha no grupo [%s]: %s", task.get("group_name", "SEM_NOME"), error)
+                    self._save_task_status(
+                        index,
+                        {
+                            "status": "ERROR",
+                            "error": str(error),
+                            "updated_at": utc_now(),
+                        },
+                    )
 
-            logger.info("   -> [1/4] Aniquilando resíduos anteriores...")
-            async for msg in client.iter_messages(entity_id, limit=30):
-                await msg.delete()
+                if test_mode:
+                    logger.warning("Modo de teste ativado. Encerrando apos a primeira tarefa.")
+                    break
+        finally:
+            await self.master.disconnect()
 
-            logger.info("   -> [2/4] Sobrescrevendo Título, Descrição e Foto...")
-            
-            me = await client.get_me()
-            worker_name_live = getattr(me, 'first_name', 'Misterioso') or 'Misterioso'
-            
-            # DIAGNÓSTICO PROFUNDO DE PRIVILÉGIOS (Prova Matemática)
-            try:
-                perms = await client.get_permissions(entity, me.id)
-                role = "CREATOR" if perms.is_creator else ("ADMIN" if perms.is_admin else "MEMBRO_COMUM")
-                can_change = "SIM" if perms.change_info else "NÃO"
-                
-                check_msg = f"Nó: [{new_name}] | Drone: [{worker_name_live}] | Cargo Real do worker no grupo: [{role}] | Pode Mudar Info? [{can_change}]"
-                logger.info(check_msg)
-                
-                # Relatório físico em arquivo apendado para auditoria
-                with open("data/diagnostico_permissoes.log", "a", encoding="utf-8") as f_diag:
-                    f_diag.write(check_msg + "\n")
-                    
-                if not perms.change_info:
-                    logger.error(f"❌ [BLOCO ESTRUTURAL] A conta base [{worker_name_live}] não possui o direito imperativo de mudar informações do grupo [{new_name}]. Abortando...")
-                    return entity_id, False, -1
-            except Exception as perm_e:
-                logger.warning(f"Não foi possível extrair a árvore de permissão para [{new_name}]: {perm_e}")
-
-            if isinstance(entity, Channel):
-                try: await client(EditTitleRequest(channel=entity, title=new_name))
-                except FloodWaitError as e: raise e
-                except Exception: pass
-                
-                try: await client(EditChatAboutRequest(peer=entity, about=new_about))
-                except FloodWaitError as e: raise e
-                except Exception: pass
-                
-                if uploaded_photo:
-                    try: await client(ChannelEditPhotoRequest(channel=entity, photo=InputChatUploadedPhoto(file=uploaded_photo)))
-                    except FloodWaitError as e: raise e
-                    except Exception as e: logger.warning(f"Erro silencioso ao mudar foto: {e}")
-            else:
-                try: await client(EditChatTitleRequest(chat_id=entity_id, title=new_name))
-                except FloodWaitError as e: raise e
-                except Exception: pass
-                
-                try: await client(EditChatAboutRequest(peer=entity_id, about=new_about))
-                except FloodWaitError as e: raise e
-                except Exception: pass
-                
-                if uploaded_photo:
-                    try: await client(EditChatPhotoRequest(chat_id=entity_id, photo=InputChatUploadedPhoto(file=uploaded_photo)))
-                    except FloodWaitError as e: raise e
-                    except Exception as e: logger.warning(f"Erro silencioso ao mudar foto (Chat Normal): {e}")
-                    
-            return entity_id, True, 0
-        except FloodWaitError as e:
-            logger.warning(f"⏳ SPAM (FloodWait Estético): Tempo residual exigido é de {e.seconds}s.")
-            return entity_id, False, e.seconds
-        except Exception as e:
-            logger.error(f"Erro permanente na etapa de mutação estética: {e}")
-            return entity_id, False, -1
-
-    async def _promote_bot(self, client, entity_id, bot_entity_str):
-        try:
-            proper_id = entity_id
-            if not str(entity_id).startswith('-100'):
-                proper_id = int(f"-100{entity_id}")
-            entity = await client.get_entity(proper_id)
-            if isinstance(entity, Channel):
-                rights = ChatAdminRights(change_info=True, post_messages=True, edit_messages=True, delete_messages=True, ban_users=True, invite_users=True, pin_messages=True, manage_call=True)
-                try: await client(EditAdminRequest(channel=entity, user_id=bot_entity_str, admin_rights=rights, rank="Bot Oficial"))
-                except FloodWaitError as e: raise e
-                except Exception as e:
-                    pass
-            return True, 0
-        except FloodWaitError as e:
-            logger.warning(f"⏳ SPAM (FloodWait BOT Promoção): {e.seconds}s.")
-            return False, e.seconds
-        except Exception as e:
-            return True, 0
-
-    async def _execute_pin(self, entity_id, pin_text, banner_path):
-        try:
-            proper_id = entity_id
-            if not str(entity_id).startswith('-100'):
-                proper_id = int(f"-100{entity_id}")
-
-            try:
-                await self.support_client.get_entity(proper_id)
-            except Exception:
-                await self.support_client.get_dialogs(limit=30)
-                
-            msg_to_pin = None
-            if os.path.exists(banner_path):
-                if len(pin_text) > 1000:
-                    msg_to_pin = await self.support_client.send_file(proper_id, banner_path)
-                    await self.support_client.send_message(proper_id, pin_text, parse_mode='html')
-                else:
-                    msg_to_pin = await self.support_client.send_file(proper_id, banner_path, caption=pin_text, parse_mode='html')
-            else:
-                msg_to_pin = await self.support_client.send_message(proper_id, pin_text, parse_mode='html')
-            
-            try:
-                await self.support_client.pin_message(proper_id, msg_to_pin.id, notify=True)
-            except FloodWaitError as e: raise e
-            except Exception as e:
-                pass
-                
-            return True, 0
-        except FloodWaitError as e:
-            logger.warning(f"⏳ SPAM no fixamento do PIN O(1): Aguardo {e.seconds}s.")
-            return False, e.seconds
-        except Exception as e:
-            logger.error(f"⚠️ Erro inalienável e fatal ao fixar (Sem Permissão/Limites): {e}")
-            return False, -1
-
-    async def run_fleet(self, test_mode=False, iteration_groups=None):
-        if not self.support_client.is_connected():
-            await self.support_client.start(phone=config.PHONE)
-            logger.info("👑 CÉREBRO: Conexão MAESTRO estabelecida em nível Root.")
-
-        groups_to_process = iteration_groups
-        groups_db = self.persistence.load_state()
-
-        if groups_to_process is None:
-            groups_to_process = groups_db
-            if not groups_to_process:
-                return
-
-        sup_uploaded_photo = None
-        if os.path.exists(config.AVATAR_PATH):
-            sup_uploaded_photo = await self.support_client.upload_file(config.AVATAR_PATH)
-
-        with open(os.path.join(DATA_DIR, 'group_description.txt'), 'r', encoding='utf-8') as f:
-            new_about = f.read()
-        
-        with open(os.path.join(DATA_DIR, 'pinned_message.txt'), 'r', encoding='utf-8') as f:
-            pin_text = f.read()
-
-        banner_path = os.path.join(BASE_DIR, 'banner_fixado.png')
-        bot_entity_str = config.BOT_USERNAME
-
-        retry_queue = []
-        max_flood_time = 0
-
-        for group in groups_to_process:
-            entity_id = group["id"]
-            new_name = group.get("new_name", "").strip()
-            
-            db_group_ref = next((g for g in groups_db if g["id"] == entity_id), group)
-            
-            if db_group_ref.get("status") == "MUTADO":
-                continue
-            if not new_name:
-                continue
-
-            logger.info(f"⚡ Disparando rotina O(1) de Controle em: [{new_name}]")
-            owner = self.get_owner_for_group(new_name)
-            final_entity_id = entity_id
-            aesthetic_success = True
-
-            if owner:
-                logger.info(f"👥 [DELEGAÇÃO SATÉLITE] Encarregado: {owner['name']}.")
-                session_path = os.path.join(BASE_DIR, 'user_client', 'sessions', f"{owner['phone']}.session")
-                
-                if os.path.exists(session_path):
-                    worker = TelegramClient(session_path, owner['api_id'], owner['api_hash'], flood_sleep_threshold=0)
-                    await worker.connect()
-                    if await worker.is_user_authorized():
-                        worker_photo = await worker.upload_file(config.AVATAR_PATH) if os.path.exists(config.AVATAR_PATH) else None
-                        
-                        final_entity_id, success, flood_seconds = await self._execute_aesthetic_mutations(worker, entity_id, new_name, worker_photo, new_about)
-                        if not success:
-                            aesthetic_success = False
-                            max_flood_time = max(max_flood_time, flood_seconds)
-                    else:
-                        logger.warning(f"⚠️ Worker falhou a conexão. Mestre Executivo cobrindo...")
-                        final_entity_id, success, flood_seconds = await self._execute_aesthetic_mutations(self.support_client, entity_id, new_name, sup_uploaded_photo, new_about)
-                        if not success:
-                            aesthetic_success = False
-                            max_flood_time = max(max_flood_time, flood_seconds)
-                    await worker.disconnect()
-                else:
-                    final_entity_id, success, flood_seconds = await self._execute_aesthetic_mutations(self.support_client, entity_id, new_name, sup_uploaded_photo, new_about)
-                    if not success:
-                        aesthetic_success = False
-                        max_flood_time = max(max_flood_time, flood_seconds)
-            else:
-                final_entity_id, success, flood_seconds = await self._execute_aesthetic_mutations(self.support_client, entity_id, new_name, sup_uploaded_photo, new_about)
-                if not success:
-                    aesthetic_success = False
-                    max_flood_time = max(max_flood_time, flood_seconds)
-
-            if not aesthetic_success:
-                if flood_seconds > 0:
-                    logger.warning(f"↪️ Interrupção Termal via Drone na etapa de Mutação. Transferido O(n) para Repescagem.")
-                    retry_queue.append(db_group_ref)
-                else:
-                    logger.error(f"❌ Falha estrutural FATAL na Mutação de [{new_name}]. Grupo dropado, sem repescagem.")
-                continue
-
-            logger.info("   -> [3/4] Promovendo Microsserviço BOT à Orquestrador...")
-            promo_ok, flood_s = await self._promote_bot(self.support_client, final_entity_id, bot_entity_str)
-            if not promo_ok:
-                if flood_s > 0:
-                    logger.warning(f"↪️ Interrupção Termal na delegação pro BOT. Transferido O(n) para Repescagem.")
-                    retry_queue.append(db_group_ref)
-                    max_flood_time = max(max_flood_time, flood_s)
-                else:
-                    logger.error(f"❌ Erro estrutural ao promover bot no grupo [{new_name}]. Ignorando bot.")
-                continue
-
-            logger.info("   -> [4/4] FIXAÇÃO ABSOLUTA DA CHAVE (VIA CONTA SUPORTE)...")
-            pin_success, flood_seconds = await self._execute_pin(final_entity_id, pin_text, banner_path)
-            
-            if not pin_success:
-                if flood_seconds > 0:
-                    logger.warning(f"↪️ INTERRUPÇÃO DE SPAM DURANTE O PIN! Grupo preservado e despachado para a Fila Póstuma.")
-                    retry_queue.append(db_group_ref)
-                    max_flood_time = max(max_flood_time, flood_seconds)
-                else:
-                    logger.error(f"❌ Erro fatal insolúvel ao Pinar em [{new_name}]. Abortando alvo da fila.")
-                continue
-                
-            db_group_ref['status'] = 'MUTADO'
-            self.persistence.save_state(groups_db)
-            self.persistence.save_production_group(final_entity_id, new_name, db_group_ref.get("link", ""))
-            logger.info(f"✅ CICLO COMPLETO: [{new_name}] blindado, otimizado e gravado na base de dados.")
-            
-            await asyncio.sleep(random.uniform(18, 32))
-
-            if test_mode:
-                logger.warning("🧪 TESTE ISOLADO TERMINAL: Encerrando execução apressada.")
-                break
-
-        if retry_queue and not test_mode:
-            logger.warning(f"\n======== [ PROTEÇÃO COGNITIVA ANTI-SPAM ATIVADA ] ========")
-            logger.warning(f"A Fila secundária possui {len(retry_queue)} nós bloqueados.")
-            logger.warning(f"Hibernação obrigatória para esfriamento de IP: {max_flood_time + 10} segundos.")
-            logger.warning(f"===========================================================\n")
-            
-            await asyncio.sleep(max_flood_time + 10)
-            
-            logger.info("🔥 Fim da hibernação. Despejando buffer e varrendo repescagem...")
-            return await self.run_fleet(test_mode=False, iteration_groups=retry_queue)
-
-        if not test_mode or not retry_queue:
-            logger.info("🧊 Pipeline Principal Executado. Zero pendências de Rate-Limit.")
-            await self.support_client.disconnect()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--test", action="store_true")
     args = parser.parse_args()
 
-    mutator = FleetOrchestrator()
-    asyncio.run(mutator.run_fleet(test_mode=args.test))
+    pipeline = GroupPipeline()
+    asyncio.run(pipeline.run(test_mode=args.test))

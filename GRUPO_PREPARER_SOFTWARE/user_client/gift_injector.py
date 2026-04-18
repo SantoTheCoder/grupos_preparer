@@ -1,178 +1,112 @@
-import sys
-import os
-import re
-import json
 import asyncio
 import logging
+import os
+import re
+import sys
+from datetime import datetime, timezone
 
-# Garante path injection para o core
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from telethon import TelegramClient
-from telethon.tl.types import Channel, ChatAdminRights
-from telethon.tl.functions.channels import InviteToChannelRequest, EditAdminRequest
-from telethon.tl.functions.messages import AddChatUserRequest
-from telethon.errors.rpcerrorlist import FloodWaitError, UserPrivacyRestrictedError
+from telethon.errors.rpcerrorlist import FloodWaitError
 
-from core.settings import config, SESSION_DIR, DATA_DIR, BASE_DIR
+from core.settings import SESSION_DIR, config
+from data.io_manager import PersistenceManager
 
-logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s [%(name)s] %(message)s", datefmt="%H:%M:%S")
-logger = logging.getLogger("INJETOR_GIFTS")
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(levelname)s [%(name)s] %(message)s",
+    datefmt="%H:%M:%S",
+)
+logger = logging.getLogger("GIFT_MASTER")
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
 
 class GiftInjector:
     def __init__(self):
-        # Mestre executivo usa a sessão de suporte principal já aquecida na pasta sessions/
-        master_session = os.path.join(SESSION_DIR, 'user_account.session') 
-        if not os.path.exists(master_session):
-             master_session = os.path.join(SESSION_DIR, 'suporte_oficial.session')
-             
+        master_session = os.path.join(SESSION_DIR, "user_account.session")
         self.master = TelegramClient(master_session, config.API_ID, config.API_HASH, flood_sleep_threshold=0)
-        self.bot_target = "@IADetetive_bot"
-        self.accounts_map = []
-        
-        mapping_path = os.path.join(DATA_DIR, 'accounts_mapping.json')
-        if os.path.exists(mapping_path):
-            with open(mapping_path, 'r', encoding='utf-8') as f:
-                self.accounts_map = json.load(f)
+        self.persistence = PersistenceManager()
 
-    async def generate_gift_code(self):
-        """Mestre pede o gift ao bot e escuta a resposta restritamente (Delay de 2s)"""
-        try:
-            await self.master.send_message(self.bot_target, "/gift 500")
-            await asyncio.sleep(2) # Delay crítico para propagação da resposta da rede
-            
-            async for msg in self.master.iter_messages(self.bot_target, limit=3):
-                if msg.out: continue 
-                
-                text = msg.text or ""
-                # EXTRATOR O(1): Segmentação semântica ancorada pela label "Código:"
-                match = re.search(r'Código:\s*([A-Z0-9\-]+)', text, re.IGNORECASE)
-                
-                if match:
-                    return match.group(1), 0
-                    
-            return "NENHUM_CODIGO_DETECTADO", 0 
-        except FloodWaitError as e:
-            return None, e.seconds
-        except Exception as e:
-            logger.error(f"Falha na geração matricial: {e}")
-            return None, -1
+    async def _generate_gift_code(self) -> str:
+        await self.master.send_message(config.GIFT_BOT_USERNAME, f"/gift {config.GIFT_VALUE}")
+        await asyncio.sleep(2)
 
-    async def ensure_bot_in_group(self, worker, entity, bot_entity):
-        """Drone tenta inserir o bot no canal e alterar seu nível de permissão"""
-        try:
-            if isinstance(entity, Channel):
-                await worker(InviteToChannelRequest(entity, [bot_entity]))
-            else:
-                await worker(AddChatUserRequest(entity.id, bot_entity, fwd_limit=0))
-        except Exception as e:
-            if "already" not in str(e).lower() and "already a participant" not in str(e):
-                logger.debug(f"Tentativa de adição marginal (Ignorada): {e}")
+        async for message in self.master.iter_messages(config.GIFT_BOT_USERNAME, limit=5):
+            if message.out:
+                continue
 
-        try:
-            rights = ChatAdminRights(
-                change_info=True, post_messages=True, edit_messages=True,
-                delete_messages=True, ban_users=True, invite_users=True,
-                pin_messages=True, manage_call=True
-            )
-            if isinstance(entity, Channel):
-                await worker(EditAdminRequest(channel=entity, user_id=bot_entity, admin_rights=rights, rank="Admin IA"))
-        except Exception as e:
-             if "ChatAdminRequiredError" not in str(e.__class__.__name__):
-                logger.debug(f"Promover Admin marginal (Ignorada): {e}")
+            text = message.text or ""
+            match = re.search(r"Codigo:\s*([A-Z0-9\-]+)", text, re.IGNORECASE)
+            if not match:
+                match = re.search(r"Código:\s*([A-Z0-9\-]+)", text, re.IGNORECASE)
+            if match:
+                return match.group(1)
+
+        raise RuntimeError("Nao foi possivel extrair o codigo do gift.")
+
+    async def _save_gift_state(self, record: dict, gift_code: str):
+        state = self.persistence.load_gift_state()
+        group_key = str(record["group_id"])
+        timestamp = utc_now()
+
+        state.setdefault("groups", {})[group_key] = {
+            "owner": record.get("owner", ""),
+            "phone": record.get("phone", ""),
+            "code": gift_code,
+            "status": "DONE",
+            "done_at": timestamp,
+            "generated_at": timestamp,
+        }
+        state.setdefault("generated_codes", {})[gift_code] = {
+            "group_id": record["group_id"],
+            "owner": record.get("owner", ""),
+            "phone": record.get("phone", ""),
+            "generated_at": timestamp,
+            "status": "DONE",
+            "done_at": timestamp,
+        }
+        self.persistence.save_gift_state(state)
 
     async def run(self):
+        groups = self.persistence.load_group_database()
+        if not groups:
+            logger.warning("Base de grupos vazia. Nada para processar.")
+            return
+
         await self.master.connect()
         if not await self.master.is_user_authorized():
-            logger.error("🛑 MESTRE NÃO ESTÁ AUTORIZADO. Pipeline Invalido (Nível Root).")
-            return
+            await self.master.start(phone=config.PHONE)
 
-        logger.info("🟢 Pipeline de Injeção de Gifts Estocásticos INICIALIZADO.")
-        
         try:
-            await self.master.get_input_entity(self.bot_target)
-        except Exception as e:
-            logger.error(f"⚠️ Entidade do bot alvo não alocada pelo mestre. Abortando. {e}")
-            return
-
-        for acc in self.accounts_map:
-            person = acc.get("name", "Desconhecido")
-            phone = acc.get("phone")
-            groups = acc.get("groups", [])
-            
-            if not groups: continue
-            
-            logger.info(f"⚡ Contexto alocado para o Owner: [{person}] ({len(groups)} grupos matriculados).")
-            session_path = os.path.join(BASE_DIR, 'user_client', 'sessions', f"{phone}.session")
-            
-            if not os.path.exists(session_path):
-                logger.warning(f"Sessão ausente para {phone}. Skip O(1).")
-                continue
-
-            worker = TelegramClient(session_path, acc.get('api_id', config.API_ID), acc.get('api_hash', config.API_HASH), flood_sleep_threshold=0)
-            await worker.connect()
-            
-            if not await worker.is_user_authorized():
-                logger.warning(f" Drone [{person}] sofreu desautenticação. Skip.")
-                await worker.disconnect()
-                continue
-                
-            try:
-                worker_bot_ent = await worker.get_input_entity(self.bot_target)
-            except:
-                worker_bot_ent = self.bot_target
-
-            # Processamento Sub-Matricial (Grupos)
-            dialogs = await worker.get_dialogs(limit=100)
-            
-            for g_code in groups:
-                entity = None
-                for d in dialogs:
-                    if g_code in d.name:
-                        entity = d.entity
-                        break
-                
-                if not entity: continue
-
-                logger.info(f"   -> Fluxo [{person}] >> [{getattr(entity, 'title', g_code)}]")
-
-                logger.info("      [MESTRE] Requisitando e processando Gift em PM...")
-                gift_code, flood_s = await self.generate_gift_code()
-                
-                if flood_s > 0:
-                    logger.warning(f"      [MESTRE] Teto térmico da API. Hibernando por {flood_s}s...")
-                    await asyncio.sleep(flood_s + 5)
-                    continue
-                elif gift_code == "NENHUM_CODIGO_DETECTADO":
-                    logger.error("      [MESTRE] Falha de extração do RegEx (Substitua na Linha 46). Abortando este nó e prosseguindo.")
+            for record in groups:
+                group_id = record.get("group_id")
+                if not group_id:
                     continue
 
-                logger.info(f"      [MESTRE] ✅ Hash Extraído e Pronto: {gift_code}")
-
-                # Passo C
-                logger.info("      [DRONE] Concedendo privilégios Ring-0 ao Bot.")
-                await self.ensure_bot_in_group(worker, entity, worker_bot_ent)
-
-                # Passo D
-                logger.info(f"      [DRONE] Injetando comando de resgate...")
                 try:
-                    await worker.send_message(entity, f"/resgatar_gift {gift_code}")
-                except FloodWaitError as e:
-                    logger.warning(f"      [DRONE] Flood no Drone. Paralisando este worker por {e.seconds}s.")
-                    await asyncio.sleep(e.seconds)
-                except Exception as e:
-                    logger.error(f"      [DRONE] Falha na rede ao despachar mensagem: {e}")
+                    gift_code = await self._generate_gift_code()
+                    await self.master.send_message(group_id, f"/resgatar_gift {gift_code}")
+                    await self._save_gift_state(record, gift_code)
+                    logger.info("Gift reenviado para [%s].", record.get("group_name", group_id))
+                    await asyncio.sleep(2)
+                except FloodWaitError as error:
+                    logger.warning("FloodWait ao reenviar gift. Aguardando %ss.", error.seconds)
+                    await asyncio.sleep(error.seconds + 2)
+                except Exception as error:
+                    logger.error("Falha ao reenviar gift para [%s]: %s", record.get("group_name", group_id), error)
+        finally:
+            await self.master.disconnect()
 
-                # Limitador entrópico - Evita o shadow ban da API de convite ao bot
-                await asyncio.sleep(4) 
-
-            await worker.disconnect()
-
-        await self.master.disconnect()
-        logger.info("🧊 Saturação de frotas completa. Encerramento Zero-Leak.")
 
 if __name__ == "__main__":
-    if hasattr(sys.stdout, 'reconfigure'):
-        sys.stdout.reconfigure(encoding='utf-8')
-    inj = GiftInjector()
-    asyncio.run(inj.run())
+    injector = GiftInjector()
+    asyncio.run(injector.run())
