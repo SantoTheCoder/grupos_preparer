@@ -28,7 +28,6 @@ class Settings(BaseSettings):
     class Config:
         env_file = ENV_FILE_PATH
         env_file_encoding = "utf-8"
-        extra = "ignore"
 
 # Instância termicamente imutável do objeto
 config = Settings()

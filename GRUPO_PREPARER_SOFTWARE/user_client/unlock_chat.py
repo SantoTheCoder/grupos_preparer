@@ -71,17 +71,21 @@ async def main():
 
             try:
                 # EditChatDefaultBannedRightsRequest(peer, default_banned_rights) — positional
+                # False = permitido, True = bloqueado
                 await worker(EditChatDefaultBannedRightsRequest(
                     entity,
                     ChatBannedRights(
                         until_date=None,
-                        send_messages=False,
-                        send_media=False,
-                        send_stickers=False,
-                        send_gifs=False,
-                        send_games=False,
-                        send_inline=False,
-                        embed_links=False
+                        send_messages=False,   # ✅ Permitido
+                        send_media=True,       # ❌ Bloqueado
+                        send_stickers=True,    # ❌ Bloqueado
+                        send_gifs=True,        # ❌ Bloqueado
+                        send_games=True,       # ❌ Bloqueado
+                        send_inline=True,      # ❌ Bloqueado
+                        embed_links=True,      # ❌ Bloqueado
+                        invite_users=False,    # ✅ Permitido (add members)
+                        pin_messages=True,     # ❌ Bloqueado
+                        change_info=True       # ❌ Bloqueado
                     )
                 ))
                 logger.info(f"   ✅ Chat aberto.")
