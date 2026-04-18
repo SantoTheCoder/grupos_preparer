@@ -3313,3 +3313,45 @@ sqlite3.OperationalError: database is locked
 [03:53:02] WARNING [ORQUESTRA_MESTRE:328] Hibernação obrigatória para esfriamento de IP: 812 segundos.
 [03:53:02] WARNING [ORQUESTRA_MESTRE:329] ===========================================================
 
+[12:32:40] INFO [telethon.network.mtprotosender:234] Connecting to 149.154.175.60:443/TcpFull...
+[12:32:40] INFO [telethon.network.mtprotosender:285] Connection to 149.154.175.60:443/TcpFull complete!
+[12:32:41] INFO [NOVO_PIPELINE:87] Master conectado com sucesso.
+[12:32:41] INFO [telethon.network.mtprotosender:234] Connecting to 149.154.175.60:443/TcpFull...
+[12:32:41] INFO [telethon.network.mtprotosender:285] Connection to 149.154.175.60:443/TcpFull complete!
+[12:32:42] INFO [NOVO_PIPELINE:312] Criando grupo [Grupo Teste] pelo drone [Fernando Gomes].
+[12:32:43] INFO [telethon.client.uploads:705] Uploading file of 583623 bytes in 5 chunks of 131072
+[12:32:47] INFO [telethon.client.uploads:705] Uploading file of 903519 bytes in 7 chunks of 131072
+[12:32:49] INFO [telethon.client.updates:474] Got difference for channel 3902642218 updates
+[12:32:51] INFO [telethon.client.updates:474] Got difference for channel 3902642218 updates
+[12:32:52] INFO [telethon.network.mtprotosender:325] Disconnecting from 149.154.175.60:443/TcpFull...
+[12:32:52] INFO [telethon.network.mtprotosender:345] Disconnection from 149.154.175.60:443/TcpFull complete!
+[12:32:52] ERROR [NOVO_PIPELINE:383] Falha no grupo [Grupo Teste]: Nao foi possivel extrair o codigo do gift.
+[12:32:52] WARNING [NOVO_PIPELINE:394] Modo de teste ativado. Encerrando apos a primeira tarefa.
+[12:32:52] INFO [telethon.network.mtprotosender:325] Disconnecting from 149.154.175.60:443/TcpFull...
+[12:32:52] INFO [telethon.network.mtprotosender:345] Disconnection from 149.154.175.60:443/TcpFull complete!
+[12:35:50] INFO [telethon.network.mtprotosender:234] Connecting to 149.154.175.60:443/TcpFull...
+[12:35:50] INFO [telethon.network.mtprotosender:285] Connection to 149.154.175.60:443/TcpFull complete!
+[12:35:51] INFO [NOVO_PIPELINE:87] Master conectado com sucesso.
+[12:35:51] INFO [telethon.network.mtprotosender:234] Connecting to 149.154.175.60:443/TcpFull...
+[12:35:51] INFO [telethon.network.mtprotosender:285] Connection to 149.154.175.60:443/TcpFull complete!
+[12:35:53] INFO [NOVO_PIPELINE:330] Retomando grupo existente [Grupo Teste] para o drone [Fernando Gomes].
+[12:35:55] INFO [telethon.client.uploads:705] Uploading file of 903519 bytes in 7 chunks of 131072
+[12:36:04] INFO [NOVO_PIPELINE:399] Grupo [Grupo Teste] concluido no novo fluxo.
+[12:36:04] INFO [telethon.network.mtprotosender:325] Disconnecting from 149.154.175.60:443/TcpFull...
+[12:36:04] INFO [telethon.network.mtprotosender:345] Disconnection from 149.154.175.60:443/TcpFull complete!
+[12:36:04] WARNING [NOVO_PIPELINE:428] Modo de teste ativado. Encerrando apos a primeira tarefa.
+[12:36:04] INFO [telethon.network.mtprotosender:325] Disconnecting from 149.154.175.60:443/TcpFull...
+[12:36:04] INFO [telethon.network.mtprotosender:345] Disconnection from 149.154.175.60:443/TcpFull complete!
+[12:42:01] INFO [telethon.network.mtprotosender:234] Connecting to 149.154.175.60:443/TcpFull...
+[12:42:01] INFO [telethon.network.mtprotosender:285] Connection to 149.154.175.60:443/TcpFull complete!
+[12:42:02] INFO [NOVO_PIPELINE:87] Master conectado com sucesso.
+[12:42:02] INFO [telethon.network.mtprotosender:234] Connecting to 149.154.175.60:443/TcpFull...
+[12:42:02] INFO [telethon.network.mtprotosender:285] Connection to 149.154.175.60:443/TcpFull complete!
+[12:42:03] INFO [NOVO_PIPELINE:337] Retomando grupo existente [Grupo Teste] para o drone [Fernando Gomes].
+[12:42:05] INFO [telethon.client.uploads:705] Uploading file of 903519 bytes in 7 chunks of 131072
+[12:42:09] INFO [NOVO_PIPELINE:402] Grupo [Grupo Teste] concluido no novo fluxo.
+[12:42:09] INFO [telethon.network.mtprotosender:325] Disconnecting from 149.154.175.60:443/TcpFull...
+[12:42:09] INFO [telethon.network.mtprotosender:345] Disconnection from 149.154.175.60:443/TcpFull complete!
+[12:42:09] WARNING [NOVO_PIPELINE:431] Modo de teste ativado. Encerrando apos a primeira tarefa.
+[12:42:09] INFO [telethon.network.mtprotosender:325] Disconnecting from 149.154.175.60:443/TcpFull...
+[12:42:09] INFO [telethon.network.mtprotosender:345] Disconnection from 149.154.175.60:443/TcpFull complete!

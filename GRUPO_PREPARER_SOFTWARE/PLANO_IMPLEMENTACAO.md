@@ -11,6 +11,7 @@
 ### Drone
 
 - Cria o grupo do zero.
+- Fixa o grupo na lista de conversas do proprio drone, no topo dos chats fixados.
 - Define nome, descricao e foto.
 - Adiciona o `master` como contato.
 - Garante que o `master` tambem tenha o `drone` como contato.

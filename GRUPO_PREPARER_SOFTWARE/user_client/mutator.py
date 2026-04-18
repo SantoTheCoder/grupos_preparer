@@ -18,10 +18,13 @@ from telethon.tl.functions.channels import (
     EditAdminRequest,
     EditPhotoRequest as ChannelEditPhotoRequest,
     InviteToChannelRequest,
+    ToggleSlowModeRequest,
 )
 from telethon.tl.functions.contacts import ImportContactsRequest
-from telethon.tl.functions.messages import ExportChatInviteRequest
-from telethon.tl.types import ChatAdminRights, InputChatUploadedPhoto, InputPhoneContact
+from telethon.tl.functions.messages import EditChatDefaultBannedRightsRequest, ExportChatInviteRequest
+from telethon.tl.functions.messages import ReorderPinnedDialogsRequest, ToggleDialogPinRequest
+from telethon.tl.types import ChatAdminRights, ChatBannedRights, InputChatUploadedPhoto, InputPhoneContact
+from telethon.tl.types import InputDialogPeer
 
 from core.settings import BASE_DIR, DATA_DIR, SESSION_DIR, config
 from data.io_manager import PersistenceManager
@@ -115,6 +118,20 @@ class GroupPipeline:
 
         return None
 
+    def _find_existing_record(self, task: dict) -> dict | None:
+        group_id = task.get("group_id")
+        owner = task.get("owner")
+        internal_code = task.get("internal_code")
+
+        for record in self.persistence.load_group_database():
+            if group_id and record.get("group_id") == group_id:
+                return record
+            if owner and internal_code:
+                if record.get("owner") == owner and record.get("internal_code") == internal_code:
+                    return record
+
+        return None
+
     def _read_text_file(self, path: str) -> str:
         if not os.path.exists(path):
             return ""
@@ -165,6 +182,31 @@ class GroupPipeline:
 
         return entity
 
+    async def _pin_group_dialog(self, drone: TelegramClient, entity):
+        input_peer = await drone.get_input_entity(entity)
+        dialog_peer = InputDialogPeer(input_peer)
+
+        await drone(ToggleDialogPinRequest(peer=dialog_peer, pinned=True))
+
+        dialogs = await drone.get_dialogs(limit=100)
+        pinned_order = [dialog_peer]
+        for dialog in dialogs:
+            if not getattr(dialog, "pinned", False):
+                continue
+
+            existing_peer = InputDialogPeer(await drone.get_input_entity(dialog.entity))
+            if existing_peer.peer == dialog_peer.peer:
+                continue
+            pinned_order.append(existing_peer)
+
+        await drone(
+            ReorderPinnedDialogsRequest(
+                folder_id=0,
+                order=pinned_order,
+                force=True,
+            )
+        )
+
     async def _invite_and_promote_user(self, drone: TelegramClient, entity, user_ref, rank: str):
         try:
             await drone(InviteToChannelRequest(entity, [user_ref]))
@@ -186,6 +228,33 @@ class GroupPipeline:
         await self._invite_and_promote_user(drone, entity, bot_entity, rank)
         return bot_entity
 
+    async def _configure_group_permissions(self, drone: TelegramClient, entity):
+        allowed_members_rights = ChatBannedRights(
+            until_date=None,
+            send_messages=False,
+            send_media=False,
+            send_stickers=False,
+            send_gifs=False,
+            send_games=False,
+            send_inline=False,
+            embed_links=False,
+            send_polls=False,
+            change_info=True,
+            invite_users=False,
+            pin_messages=True,
+            manage_topics=True,
+            send_photos=False,
+            send_videos=False,
+            send_roundvideos=False,
+            send_audios=False,
+            send_voices=False,
+            send_docs=False,
+            send_plain=False,
+            edit_rank=True,
+        )
+        await drone(EditChatDefaultBannedRightsRequest(entity, allowed_members_rights))
+        await drone(ToggleSlowModeRequest(channel=entity, seconds=300))
+
     async def _extract_group_link(self, client: TelegramClient, entity) -> str:
         try:
             invite = await client(ExportChatInviteRequest(peer=entity))
@@ -193,32 +262,28 @@ class GroupPipeline:
         except Exception:
             return ""
 
-    async def _post_and_pin(self, group_id: int):
-        text = self._read_text_file(config.pinned_message_file)
-        if not text:
-            raise RuntimeError("Texto fixado nao encontrado.")
-
+    async def _get_master_target(self, group_id: int):
         try:
-            target = await self.master.get_entity(group_id)
+            return await self.master.get_entity(group_id)
         except Exception:
             await self.master.get_dialogs(limit=50)
-            target = await self.master.get_entity(group_id)
+            return await self.master.get_entity(group_id)
 
-        if os.path.exists(config.banner_file):
-            try:
-                message = await self.master.send_file(
-                    target,
-                    config.banner_file,
-                    caption=text,
-                    parse_mode="html",
-                )
-            except Exception:
-                await self.master.send_file(target, config.banner_file)
-                message = await self.master.send_message(target, text, parse_mode="html")
-        else:
-            message = await self.master.send_message(target, text, parse_mode="html")
+    async def _send_master_photo(self, target):
+        if not os.path.exists(config.banner_file):
+            return None
+        message = await self.master.send_file(target, config.banner_file)
+        return message.id
 
-        await self.master.pin_message(target, message.id, notify=True)
+    async def _send_master_text(self, target, text: str):
+        message = await self.master.send_message(target, text, parse_mode="html")
+        return message.id
+
+    async def _pin_master_text(self, target, message_id: int):
+        await self.master.pin_message(target, message_id, notify=True)
+
+    async def _redeem_gift(self, target, gift_code: str):
+        message = await self.master.send_message(target, f"/resgatar_gift {gift_code}")
         return message.id
 
     async def _generate_gift_code(self) -> str:
@@ -230,17 +295,11 @@ class GroupPipeline:
                 continue
 
             text = message.text or ""
-            match = re.search(r"Codigo:\s*([A-Z0-9\-]+)", text, re.IGNORECASE)
-            if not match:
-                match = re.search(r"Código:\s*([A-Z0-9\-]+)", text, re.IGNORECASE)
+            match = re.search(r"SYNTAX-[A-Z0-9]+", text, re.IGNORECASE)
             if match:
-                return match.group(1)
+                return match.group(0)
 
         raise RuntimeError("Nao foi possivel extrair o codigo do gift.")
-
-    async def _redeem_gift(self, group_id: int, gift_code: str):
-        target = await self.master.get_entity(group_id)
-        await self.master.send_message(target, f"/resgatar_gift {gift_code}")
 
     async def _update_gift_state(self, record: dict, gift_code: str):
         state = self.persistence.load_gift_state()
@@ -266,8 +325,23 @@ class GroupPipeline:
         self.persistence.save_gift_state(state)
 
     def _save_task_status(self, index: int, updates: dict):
-        self.seed_queue[index] = {**self.seed_queue[index], **updates}
+        next_task = {**self.seed_queue[index], **updates}
+        if next_task.get("status") == "READY":
+            next_task.pop("error", None)
+        self.seed_queue[index] = next_task
         self.persistence.save_seed_queue(self.seed_queue)
+
+    def _persist_record(self, index: int, record: dict, task_status: str):
+        record["status"] = task_status
+        record["updated_at"] = utc_now()
+        self.persistence.upsert_group_record(record)
+        task_updates = {
+            "status": task_status,
+            "group_id": record["group_id"],
+            "invite_link": record.get("invite_link", ""),
+            "updated_at": record["updated_at"],
+        }
+        self._save_task_status(index, task_updates)
 
     async def _process_task(self, index: int, task: dict):
         if task.get("status") == "READY":
@@ -282,57 +356,81 @@ class GroupPipeline:
             raise RuntimeError(f"Sessao do drone indisponivel: {account.get('phone')}")
 
         try:
-            logger.info("Criando grupo [%s] pelo drone [%s].", task["group_name"], account.get("name"))
+            existing_record = self._find_existing_record(task)
 
             await self._ensure_contact(drone, config.PHONE, "Master")
             await self._ensure_contact(self.master, account["phone"], account.get("name", "Drone"))
 
-            entity = await self._create_group(drone, task)
+            if existing_record and existing_record.get("group_id"):
+                logger.info(
+                    "Retomando grupo existente [%s] para o drone [%s].",
+                    existing_record.get("group_name", task["group_name"]),
+                    account.get("name"),
+                )
+                entity = await drone.get_entity(existing_record["group_id"])
+                invite_link = existing_record.get("invite_link", "")
+            else:
+                logger.info("Criando grupo [%s] pelo drone [%s].", task["group_name"], account.get("name"))
+                entity = await self._create_group(drone, task)
+                await self._pin_group_dialog(drone, entity)
+                invite_link = await self._extract_group_link(drone, entity)
+
             master_entity = await drone.get_input_entity(config.PHONE)
 
             await self._invite_and_promote_user(drone, entity, master_entity, "Master")
             await self._invite_bot(drone, entity, config.FISCAL_BOT_USERNAME, "Fiscal")
-            await self._invite_bot(drone, entity, config.GIFT_BOT_USERNAME, "Gift")
+            await self._invite_bot(drone, entity, config.GIFT_BOT_USERNAME, "Ia Detetive")
+            await self._configure_group_permissions(drone, entity)
 
             group_id = utils.get_peer_id(entity)
-            invite_link = await self._extract_group_link(drone, entity)
+            if not invite_link:
+                invite_link = await self._extract_group_link(drone, entity)
             record = {
+                **(existing_record or {}),
                 "owner": account.get("name", ""),
                 "phone": account.get("phone", ""),
                 "internal_code": task.get("internal_code", ""),
                 "group_name": task["group_name"],
                 "group_id": group_id,
                 "invite_link": invite_link,
+                "dialog_pinned": True,
                 "master_added": True,
                 "fiscal_bot_added": True,
                 "gift_bot_added": True,
-                "status": "DRONE_READY",
-                "updated_at": utc_now(),
+                "gift_bot_rank": "Ia Detetive",
+                "member_permissions_configured": True,
+                "slow_mode_seconds": 300,
             }
-            self.persistence.upsert_group_record(record)
+            self._persist_record(index, record, "DRONE_READY")
 
-            pinned_message_id = await self._post_and_pin(group_id)
-            gift_code = await self._generate_gift_code()
-            await self._redeem_gift(group_id, gift_code)
+            target = await self._get_master_target(group_id)
+            text = self._read_text_file(config.pinned_message_file)
+            if not text:
+                raise RuntimeError("Texto fixado nao encontrado.")
 
-            final_record = {
-                **record,
-                "pinned_message_id": pinned_message_id,
-                "gift_code": gift_code,
-                "status": "READY",
-                "updated_at": utc_now(),
-            }
-            self.persistence.upsert_group_record(final_record)
-            await self._update_gift_state(final_record, gift_code)
-            self._save_task_status(
-                index,
-                {
-                    "status": "READY",
-                    "group_id": group_id,
-                    "invite_link": invite_link,
-                    "updated_at": utc_now(),
-                },
-            )
+            if os.path.exists(config.banner_file) and not record.get("photo_message_id"):
+                record["photo_message_id"] = await self._send_master_photo(target)
+                self._persist_record(index, record, "MASTER_PHOTO_SENT")
+
+            if not record.get("text_message_id"):
+                record["text_message_id"] = await self._send_master_text(target, text)
+                self._persist_record(index, record, "MASTER_TEXT_SENT")
+
+            if not record.get("pinned_message_id"):
+                await self._pin_master_text(target, record["text_message_id"])
+                record["pinned_message_id"] = record["text_message_id"]
+                self._persist_record(index, record, "MASTER_PINNED")
+
+            if not record.get("gift_code"):
+                record["gift_code"] = await self._generate_gift_code()
+                self._persist_record(index, record, "GIFT_CREATED")
+
+            if not record.get("gift_redeem_message_id"):
+                record["gift_redeem_message_id"] = await self._redeem_gift(target, record["gift_code"])
+                self._persist_record(index, record, "GIFT_SENT")
+
+            self._persist_record(index, record, "READY")
+            await self._update_gift_state(record, record["gift_code"])
             logger.info("Grupo [%s] concluido no novo fluxo.", task["group_name"])
         finally:
             await drone.disconnect()

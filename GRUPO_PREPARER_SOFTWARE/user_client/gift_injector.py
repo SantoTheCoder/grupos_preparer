@@ -45,11 +45,9 @@ class GiftInjector:
                 continue
 
             text = message.text or ""
-            match = re.search(r"Codigo:\s*([A-Z0-9\-]+)", text, re.IGNORECASE)
-            if not match:
-                match = re.search(r"Código:\s*([A-Z0-9\-]+)", text, re.IGNORECASE)
+            match = re.search(r"SYNTAX-[A-Z0-9]+", text, re.IGNORECASE)
             if match:
-                return match.group(1)
+                return match.group(0)
 
         raise RuntimeError("Nao foi possivel extrair o codigo do gift.")
 
