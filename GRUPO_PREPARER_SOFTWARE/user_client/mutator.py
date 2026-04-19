@@ -20,7 +20,7 @@ from telethon.tl.functions.channels import (
     InviteToChannelRequest,
     ToggleSlowModeRequest,
 )
-from telethon.tl.functions.contacts import ImportContactsRequest
+from telethon.tl.functions.contacts import GetContactsRequest, ImportContactsRequest
 from telethon.tl.functions.messages import EditChatDefaultBannedRightsRequest, ExportChatInviteRequest
 from telethon.tl.functions.messages import ReorderPinnedDialogsRequest, ToggleDialogPinRequest
 from telethon.tl.types import ChatAdminRights, ChatBannedRights, InputChatUploadedPhoto, InputPhoneContact
@@ -81,6 +81,8 @@ class GroupPipeline:
             flood_sleep_threshold=0,
         )
         self.persistence = PersistenceManager()
+        self.master_user = None
+        self.sub_master_user = None
         self.accounts = self.persistence.load_accounts()
         accounts_changed = False
         for account in self.accounts:
@@ -115,10 +117,15 @@ class GroupPipeline:
         )
 
     async def _connect_master(self):
+        logger.info("[BOOT] Conectando master em %s.", config.master_session_file)
         await self.master.connect()
+        logger.info("[BOOT] Master conectado. Verificando autorizacao.")
         if not await self.master.is_user_authorized():
+            logger.info("[BOOT] Master sem autorizacao. Iniciando login por telefone.")
             await self.master.start(phone=config.PHONE)
-        logger.info("Master conectado com sucesso.")
+        logger.info("[BOOT] Carregando identidade do master.")
+        self.master_user = await self.master.get_me()
+        logger.info("Master conectado com sucesso. user_id=%s", self.master_user.id)
 
     async def _connect_sub_master(self):
         if not config.SUB_MASTER_PHONE:
@@ -129,11 +136,15 @@ class GroupPipeline:
         if not os.path.exists(config.sub_master_session_file):
             raise RuntimeError(f"Sessao do sub master nao encontrada: {config.sub_master_session_file}")
 
+        logger.info("[BOOT] Conectando sub master em %s.", config.sub_master_session_file)
         await self.sub_master.connect()
+        logger.info("[BOOT] Sub master conectado. Verificando autorizacao.")
         if not await self.sub_master.is_user_authorized():
             await self.sub_master.disconnect()
             raise RuntimeError("Sessao do sub master nao esta autorizada.")
-        logger.info("Sub master conectado com sucesso.")
+        logger.info("[BOOT] Carregando identidade do sub master.")
+        self.sub_master_user = await self.sub_master.get_me()
+        logger.info("Sub master conectado com sucesso. user_id=%s", self.sub_master_user.id)
 
     async def _connect_drone(self, account: dict) -> TelegramClient | None:
         phone = account.get("phone")
@@ -146,12 +157,15 @@ class GroupPipeline:
             return None
 
         client = TelegramClient(session_path, api_id, api_hash, flood_sleep_threshold=0)
+        logger.info("[BOOT] Conectando drone [%s] em %s.", account.get("name", phone), session_path)
         await client.connect()
+        logger.info("[BOOT] Drone [%s] conectado. Verificando autorizacao.", account.get("name", phone))
         if not await client.is_user_authorized():
             logger.error("Sessao do drone nao esta autorizada: %s", phone)
             await client.disconnect()
             return None
 
+        logger.info("[BOOT] Drone [%s] pronto para operacao.", account.get("name", phone))
         return client
 
     def _resolve_drone_account(self, task: dict) -> dict | None:
@@ -201,12 +215,13 @@ class GroupPipeline:
         delay_base = config.ACTION_DELAY_SECONDS if base is None else base
         delay_jitter = config.ACTION_DELAY_JITTER_SECONDS if jitter is None else jitter
         total_delay = max(0.0, delay_base + random.uniform(0.0, max(0.0, delay_jitter)))
-        logger.debug("Delay de seguranca (%s): %.2fs", reason, total_delay)
+        logger.info("[DELAY] %s -> %.2fs", reason, total_delay)
         await asyncio.sleep(total_delay)
 
     async def _ensure_contact(self, client: TelegramClient, phone: str, first_name: str):
         try:
-            await client(
+            logger.info("[ETAPA] Importando contato %s (%s).", first_name, phone)
+            result = await client(
                 ImportContactsRequest(
                     [
                         InputPhoneContact(
@@ -219,11 +234,59 @@ class GroupPipeline:
                 )
             )
             await self._safe_delay(f"importar contato {phone}")
+            if getattr(result, "users", None):
+                logger.info("[ETAPA] Contato %s resolvido com sucesso.", phone)
+                return result.users[0]
+            contact_user = await self._resolve_contact_from_contacts(client, phone)
+            if contact_user is not None:
+                logger.info("[ETAPA] Contato %s resolvido pela agenda local.", phone)
+                return contact_user
+            logger.info("[ETAPA] Contato %s importado sem entidade retornada.", phone)
+            return None
         except FloodWaitError as error:
             await self._wait_flood(error, f"importar contato {phone}")
+            return None
+        except Exception as error:
+            logger.warning("Falha ao importar contato %s: %s", phone, error)
+            return None
+
+    async def _resolve_contact_from_contacts(self, client: TelegramClient, phone: str):
+        normalized_phone = re.sub(r"\D", "", phone or "")
+        try:
+            contacts = await client(GetContactsRequest(0))
+        except Exception as error:
+            logger.warning("Falha ao consultar agenda para %s: %s", phone, error)
+            return None
+
+        for user in getattr(contacts, "users", []):
+            candidate_phone = re.sub(r"\D", "", getattr(user, "phone", "") or "")
+            if candidate_phone == normalized_phone:
+                return user
+        return None
+
+    async def _resolve_admin_ref_in_drone_context(self, drone: TelegramClient, label: str, phone: str, global_user):
+        ref = await self._ensure_contact(drone, phone, label)
+        if ref is not None:
+            return ref
+
+        username = getattr(global_user, "username", None)
+        if username:
+            try:
+                logger.info("[ETAPA] Fallback: resolvendo %s por username @%s no contexto do drone.", label, username)
+                return await drone.get_input_entity(username)
+            except Exception as error:
+                logger.warning("[ETAPA] Falha ao resolver %s por username: %s", label, error)
+
+        ref = await self._resolve_contact_from_contacts(drone, phone)
+        if ref is not None:
+            return ref
+
+        logger.info("[ETAPA] Fallback final: usando identidade global de %s para adicao direta.", label)
+        return global_user
 
     async def _create_group(self, drone: TelegramClient, task: dict):
         description = self._read_text_file(config.group_description_file)
+        logger.info("[ETAPA] Disparando criacao do grupo [%s].", task["group_name"])
         response = await drone(
             CreateChannelRequest(
                 title=task["group_name"],
@@ -234,6 +297,7 @@ class GroupPipeline:
         await self._safe_delay(f"criar grupo {task['group_name']}")
         created_chat = response.chats[0]
         entity = await drone.get_entity(created_chat)
+        logger.info("[ETAPA] Grupo criado com id bruto %s.", getattr(entity, "id", None))
 
         if os.path.exists(config.avatar_file):
             uploaded = await drone.upload_file(config.avatar_file)
@@ -248,6 +312,7 @@ class GroupPipeline:
         return entity
 
     async def _pin_group_dialog(self, drone: TelegramClient, entity):
+        logger.info("[ETAPA] Fixando dialogo do grupo no topo do drone.")
         input_peer = await drone.get_input_entity(entity)
         dialog_peer = InputDialogPeer(input_peer)
 
@@ -275,12 +340,15 @@ class GroupPipeline:
 
     async def _invite_and_promote_user(self, drone: TelegramClient, entity, user_ref, rank: str, admin_rights=None):
         try:
+            logger.info("[ETAPA] Adicionando participante %s ao grupo.", rank)
             await drone(InviteToChannelRequest(entity, [user_ref]))
             await self._safe_delay(f"adicionar participante {rank}")
         except Exception as error:
             if "already" not in str(error).lower():
                 raise
+            logger.info("[ETAPA] Participante %s ja estava no grupo.", rank)
 
+        logger.info("[ETAPA] Promovendo %s para admin.", rank)
         await drone(
             EditAdminRequest(
                 channel=entity,
@@ -291,12 +359,47 @@ class GroupPipeline:
         )
         await self._safe_delay(f"promover admin {rank}")
 
+    async def _promote_existing_user(self, drone: TelegramClient, entity, user_ref, rank: str, admin_rights=None):
+        logger.info("[ETAPA] Promovendo participante existente %s para admin.", rank)
+        await drone(
+            EditAdminRequest(
+                channel=entity,
+                user_id=user_ref,
+                admin_rights=admin_rights or self.admin_rights,
+                rank=rank,
+            )
+        )
+        await self._safe_delay(f"promover admin existente {rank}")
+
     async def _invite_bot(self, drone: TelegramClient, entity, bot_username: str, rank: str):
+        logger.info("[ETAPA] Resolvendo bot %s para cargo %s.", bot_username, rank)
         bot_entity = await drone.get_input_entity(bot_username)
         await self._invite_and_promote_user(drone, entity, bot_entity, rank)
         return bot_entity
 
-    async def _configure_group_permissions(self, drone: TelegramClient, entity):
+    async def _ensure_fiscal_absent_for_master_phase(self, drone: TelegramClient, entity):
+        try:
+            logger.info("[ETAPA] Removendo temporariamente FiscalDoGrupoBot antes da fase final do master.")
+            await drone.kick_participant(entity, config.FISCAL_BOT_USERNAME)
+            await self._safe_delay("remover fiscal temporariamente")
+        except Exception as error:
+            if "not a participant" in str(error).lower() or "could not find the input entity" in str(error).lower():
+                logger.info("[ETAPA] FiscalDoGrupoBot ja nao estava presente antes da fase final.")
+            else:
+                raise
+
+    async def _set_slow_mode(self, drone: TelegramClient, entity, seconds: int):
+        try:
+            await drone(ToggleSlowModeRequest(channel=entity, seconds=seconds))
+            await self._safe_delay(f"configurar slow mode do grupo para {seconds}s")
+        except Exception as error:
+            if "wasn't modified" in str(error).lower() or "not modified" in str(error).lower():
+                logger.info("[ETAPA] Slow mode ja estava configurado em %ss.", seconds)
+            else:
+                raise
+
+    async def _configure_group_permissions(self, drone: TelegramClient, entity, enable_slow_mode: bool = True):
+        logger.info("[ETAPA] Aplicando permissoes padrao do grupo.")
         allowed_members_rights = ChatBannedRights(
             until_date=None,
             send_messages=False,
@@ -320,62 +423,103 @@ class GroupPipeline:
             send_plain=False,
             edit_rank=True,
         )
-        await drone(EditChatDefaultBannedRightsRequest(entity, allowed_members_rights))
-        await self._safe_delay("configurar permissoes padrao do grupo")
-        await drone(ToggleSlowModeRequest(channel=entity, seconds=300))
-        await self._safe_delay("configurar slow mode do grupo")
+        try:
+            await drone(EditChatDefaultBannedRightsRequest(entity, allowed_members_rights))
+            await self._safe_delay("configurar permissoes padrao do grupo")
+        except Exception as error:
+            if "wasn't modified" in str(error).lower() or "not modified" in str(error).lower():
+                logger.info("[ETAPA] Permissoes padrao ja estavam aplicadas.")
+            else:
+                raise
+
+        if enable_slow_mode:
+            await self._set_slow_mode(drone, entity, 300)
 
     async def _extract_group_link(self, client: TelegramClient, entity) -> str:
         try:
+            logger.info("[ETAPA] Exportando link de convite do grupo.")
             invite = await client(ExportChatInviteRequest(peer=entity))
             return invite.link
         except Exception:
             return ""
 
-    async def _get_master_target(self, group_id: int):
+    async def _build_master_target(self, record: dict, entity):
+        invite_link = record.get("invite_link", "")
+        group_id = record.get("group_id") or utils.get_peer_id(entity)
+
+        if invite_link:
+            logger.info("[ETAPA] Resolvendo grupo do master pelo invite_link: %s.", invite_link)
+            try:
+                return await self.master.get_input_entity(invite_link)
+            except Exception as error:
+                logger.warning("[ETAPA] Falha ao resolver pelo invite_link: %s", error)
+
+        logger.info("[ETAPA] Fallback: resolvendo grupo do master por group_id: %s.", group_id)
+        return await self.master.get_input_entity(group_id)
+
+    async def _find_group_participant(self, drone: TelegramClient, entity, user_id: int, label: str, attempts: int = 3):
+        logger.info("[ETAPA] Procurando participante %s dentro do grupo.", label)
+        for attempt in range(1, attempts + 1):
+            participants = await drone.get_participants(entity, limit=100)
+            for participant in participants:
+                if participant.id == user_id:
+                    logger.info("[ETAPA] Participante %s encontrado no grupo.", label)
+                    return participant
+            if attempt < attempts:
+                logger.info("[ETAPA] Participante %s ainda nao apareceu. Nova checagem %s/%s.", label, attempt + 1, attempts)
+                await asyncio.sleep(1.5)
+        return None
+
+    async def _ensure_direct_membership(self, drone: TelegramClient, entity, user_ref, user_id: int, label: str):
+        participant = await self._find_group_participant(drone, entity, user_id, label, attempts=1)
+        if participant is not None:
+            return participant
+
+        logger.info("[ETAPA] Adicionando %s diretamente pelo drone.", label)
         try:
-            return await self.master.get_entity(group_id)
-        except Exception:
-            await self.master.get_dialogs(limit=50)
-            return await self.master.get_entity(group_id)
+            await drone(InviteToChannelRequest(entity, [user_ref]))
+            await self._safe_delay(f"adicionar participante direto {label}")
+        except Exception as error:
+            if "already" not in str(error).lower():
+                raise
+            logger.info("[ETAPA] %s ja constava no grupo durante a adicao direta.", label)
 
-    async def _ensure_sub_master_contact_flow(self, drone: TelegramClient, account: dict):
-        await self._ensure_contact(drone, config.SUB_MASTER_PHONE, config.SUB_MASTER_NAME)
-        await self._ensure_contact(self.sub_master, account["phone"], account.get("name", "Drone"))
-
-    async def _add_sub_master(self, drone: TelegramClient, entity, account: dict):
-        await self._ensure_sub_master_contact_flow(drone, account)
-        sub_master_entity = await drone.get_input_entity(config.SUB_MASTER_PHONE)
-        await self._invite_and_promote_user(
-            drone,
-            entity,
-            sub_master_entity,
-            "Sub Master",
-            admin_rights=self.sub_master_admin_rights,
-        )
+        participant = await self._find_group_participant(drone, entity, user_id, label)
+        if participant is None:
+            raise RuntimeError(f"Participante {label} nao entrou no grupo apos adicao direta.")
+        return participant
 
     async def _send_master_photo(self, target):
         if not os.path.exists(config.banner_file):
             return None
+        logger.info("[ETAPA] Master enviando foto para o grupo.")
         message = await self.master.send_file(target, config.banner_file)
         await self._safe_delay("enviar foto do master")
         return message.id
 
     async def _send_master_text(self, target, text: str):
-        message = await self.master.send_message(target, text, parse_mode="html")
+        logger.info("[ETAPA] Master enviando texto para o grupo.")
+        message = await self.master.send_message(target, text, parse_mode="html", link_preview=False)
         await self._safe_delay("enviar texto do master")
         return message.id
 
     async def _pin_master_text(self, target, message_id: int):
+        logger.info("[ETAPA] Master fixando mensagem %s.", message_id)
         await self.master.pin_message(target, message_id, notify=True)
         await self._safe_delay("fixar texto do master")
 
+    async def _message_exists(self, target, message_id: int) -> bool:
+        message = await self.master.get_messages(target, ids=message_id)
+        return bool(message and getattr(message, "id", None))
+
     async def _redeem_gift(self, target, gift_code: str):
+        logger.info("[ETAPA] Master enviando comando de resgate para o gift %s.", gift_code)
         message = await self.master.send_message(target, f"/resgatar_gift {gift_code}")
         await self._safe_delay("enviar resgate do gift")
         return message.id
 
     async def _generate_gift_code(self) -> str:
+        logger.info("[ETAPA] Master solicitando geracao de gift ao bot %s.", config.GIFT_BOT_USERNAME)
         await self.master.send_message(config.GIFT_BOT_USERNAME, f"/gift {config.GIFT_VALUE}")
         await self._safe_delay(
             "aguardar resposta do gift bot",
@@ -390,6 +534,7 @@ class GroupPipeline:
             text = message.text or ""
             match = re.search(r"SYNTAX-[A-Z0-9]+", text, re.IGNORECASE)
             if match:
+                logger.info("[ETAPA] Gift gerado com codigo %s.", match.group(0))
                 return match.group(0)
 
         raise RuntimeError("Nao foi possivel extrair o codigo do gift.")
@@ -400,18 +545,19 @@ class GroupPipeline:
             next_task.pop("error", None)
         self.groups[index] = next_task
         self.persistence.save_groups(self.groups)
+        logger.info("[STATE] groups.json atualizado: status=%s, group_id=%s", next_task.get("status"), next_task.get("group_id"))
 
     def _persist_record(self, index: int, record: dict, task_status: str):
         record["status"] = task_status
         record["updated_at"] = utc_now()
         self.persistence.upsert_group_record(record)
-        task_updates = {
-            "status": task_status,
-            "group_id": record["group_id"],
-            "invite_link": record.get("invite_link", ""),
-            "updated_at": record["updated_at"],
-        }
-        self._save_task_status(index, task_updates)
+        logger.info("[STATE] Registro persistido em groups.json com status=%s.", task_status)
+        next_task = {**self.groups[index], **record}
+        if next_task.get("status") == "READY":
+            next_task.pop("error", None)
+        self.groups[index] = next_task
+        self.persistence.save_groups(self.groups)
+        logger.info("[STATE] groups.json atualizado: status=%s, group_id=%s", next_task.get("status"), next_task.get("group_id"))
 
     async def _process_task(self, index: int, task: dict):
         if task.get("status") == "READY":
@@ -429,8 +575,11 @@ class GroupPipeline:
 
         try:
             existing_record = self._find_existing_record(task)
+            logger.info("[ETAPA] Preparando contatos base para [%s].", task["group_name"])
 
-            await self._ensure_contact(drone, config.PHONE, "Master")
+            if self.master_user is None:
+                raise RuntimeError("Master nao conectado para promocao.")
+            master_ref = await self._resolve_admin_ref_in_drone_context(drone, "Master", config.PHONE, self.master_user)
             await self._ensure_contact(self.master, account["phone"], account.get("name", "Drone"))
 
             if existing_record and existing_record.get("group_id"):
@@ -444,20 +593,55 @@ class GroupPipeline:
             else:
                 logger.info("Criando grupo [%s] pelo drone [%s].", task["group_name"], account.get("name"))
                 entity = await self._create_group(drone, task)
+                logger.info("[ETAPA] Fixando grupo no topo dos chats do drone.")
                 await self._pin_group_dialog(drone, entity)
+                logger.info("[ETAPA] Extraindo link de convite inicial.")
                 invite_link = await self._extract_group_link(drone, entity)
 
-            master_entity = await drone.get_input_entity(config.PHONE)
-
-            await self._invite_and_promote_user(drone, entity, master_entity, "Master")
-            await self._add_sub_master(drone, entity, account)
-            await self._invite_bot(drone, entity, config.FISCAL_BOT_USERNAME, "Fiscal")
-            await self._invite_bot(drone, entity, config.GIFT_BOT_USERNAME, "Ia Detetive")
-            await self._configure_group_permissions(drone, entity)
-
-            group_id = utils.get_peer_id(entity)
             if not invite_link:
                 invite_link = await self._extract_group_link(drone, entity)
+            if not invite_link:
+                raise RuntimeError("Nao foi possivel obter invite_link do grupo.")
+
+            if self.sub_master_user is None:
+                raise RuntimeError("Sub master nao conectado para promocao.")
+            sub_master_ref = await self._resolve_admin_ref_in_drone_context(
+                drone,
+                config.SUB_MASTER_NAME,
+                config.SUB_MASTER_PHONE,
+                self.sub_master_user,
+            )
+
+            await self._ensure_contact(self.sub_master, account["phone"], account.get("name", "Drone"))
+
+            logger.info("[ETAPA] Garantindo entrada direta do master pelo drone.")
+            master_participant = await self._ensure_direct_membership(drone, entity, master_ref, self.master_user.id, "Master")
+            logger.info("[ETAPA] Adicionando master ao grupo.")
+            await self._promote_existing_user(drone, entity, master_participant, "Master")
+            logger.info("[ETAPA] Adicionando sub master anonimo ao grupo.")
+            sub_master_participant = await self._ensure_direct_membership(
+                drone,
+                entity,
+                sub_master_ref,
+                self.sub_master_user.id,
+                "Sub Master",
+            )
+            await self._promote_existing_user(
+                drone,
+                entity,
+                sub_master_participant,
+                "Sub Master",
+                admin_rights=self.sub_master_admin_rights,
+            )
+            logger.info("[ETAPA] Adicionando IaDetetive_Bot ao grupo.")
+            await self._invite_bot(drone, entity, config.GIFT_BOT_USERNAME, "Ia Detetive")
+            logger.info("[ETAPA] Configurando permissoes base do grupo.")
+            await self._configure_group_permissions(drone, entity, enable_slow_mode=False)
+            await self._ensure_fiscal_absent_for_master_phase(drone, entity)
+            logger.info("[ETAPA] Desligando temporariamente o slow mode para a fase final do master.")
+            await self._set_slow_mode(drone, entity, 0)
+
+            group_id = utils.get_peer_id(entity)
             record = {
                 **(existing_record or {}),
                 "account_id": account_id,
@@ -484,31 +668,48 @@ class GroupPipeline:
             }
             self._persist_record(index, record, "DRONE_READY")
 
-            target = await self._get_master_target(group_id)
+            target = await self._build_master_target(record, entity)
             text = self._read_text_file(config.pinned_message_file)
             if not text:
                 raise RuntimeError("Texto fixado nao encontrado.")
 
+            if record.get("text_message_id") and not await self._message_exists(target, record["text_message_id"]):
+                logger.info("[ETAPA] Texto antigo nao existe mais. Reenviando texto do master.")
+                record.pop("text_message_id", None)
+                record.pop("pinned_message_id", None)
+
             if os.path.exists(config.banner_file) and not record.get("photo_message_id"):
+                logger.info("[ETAPA] Master enviando foto separada.")
                 record["photo_message_id"] = await self._send_master_photo(target)
                 self._persist_record(index, record, "MASTER_PHOTO_SENT")
 
             if not record.get("text_message_id"):
+                logger.info("[ETAPA] Master enviando texto separado.")
                 record["text_message_id"] = await self._send_master_text(target, text)
                 self._persist_record(index, record, "MASTER_TEXT_SENT")
 
             if not record.get("pinned_message_id"):
+                logger.info("[ETAPA] Master fixando a mensagem de texto.")
                 await self._pin_master_text(target, record["text_message_id"])
                 record["pinned_message_id"] = record["text_message_id"]
                 self._persist_record(index, record, "MASTER_PINNED")
 
             if not record.get("gift_code"):
+                logger.info("[ETAPA] Master gerando gift.")
                 record["gift_code"] = await self._generate_gift_code()
                 self._persist_record(index, record, "GIFT_CREATED")
 
             if not record.get("gift_redeem_message_id"):
+                logger.info("[ETAPA] Master enviando resgate do gift no grupo.")
                 record["gift_redeem_message_id"] = await self._redeem_gift(target, record["gift_code"])
                 self._persist_record(index, record, "GIFT_SENT")
+
+            logger.info("[ETAPA] Reativando slow mode final de 5 minutos.")
+            await self._set_slow_mode(drone, entity, 300)
+            record["slow_mode_seconds"] = 300
+            logger.info("[ETAPA] Recolocando FiscalDoGrupoBot ao fim do fluxo.")
+            await self._invite_bot(drone, entity, config.FISCAL_BOT_USERNAME, "Fiscal")
+            record["fiscal_bot_added"] = True
 
             self._persist_record(index, record, "READY")
             logger.info("Grupo [%s] concluido no novo fluxo.", task["group_name"])
@@ -522,13 +723,21 @@ class GroupPipeline:
 
         await self._connect_master()
         await self._connect_sub_master()
+        processed_in_test = False
 
         try:
             for index, task in enumerate(self.groups):
+                if test_mode and task.get("status") == "READY":
+                    continue
+
                 try:
                     await self._process_task(index, task)
+                    if test_mode:
+                        processed_in_test = True
                 except FloodWaitError as error:
                     await self._wait_flood(error, task.get("group_name", "tarefa"))
+                    if test_mode:
+                        processed_in_test = True
                 except Exception as error:
                     logger.error("Falha no grupo [%s]: %s", task.get("group_name", "SEM_NOME"), error)
                     self._save_task_status(
@@ -539,8 +748,10 @@ class GroupPipeline:
                             "updated_at": utc_now(),
                         },
                     )
+                    if test_mode:
+                        processed_in_test = True
 
-                if test_mode:
+                if test_mode and processed_in_test:
                     logger.warning("Modo de teste ativado. Encerrando apos a primeira tarefa.")
                     break
 
