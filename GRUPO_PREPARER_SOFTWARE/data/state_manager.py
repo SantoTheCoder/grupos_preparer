@@ -11,7 +11,7 @@ class StateMachine:
     Protege a continuidade do sistema (Zero Retrabalho) contra desligamentos de hardware
     e efetua o controle atômico termal (Anti-SPAM) separado por Pessoa/Owner.
     """
-    def __init__(self, db_path="data/database_grupos.json", state_path="data/migration_state.json"):
+    def __init__(self, db_path="data/groups.json", state_path="data/migration_state.json"):
         self.db_path = db_path
         self.state_path = state_path
         self.state = self._load_or_initialize()
@@ -30,22 +30,22 @@ class StateMachine:
             
         initial_state = {}
         for group in base_db:
-            if not group.get("is_mapped"):
-                continue # Evade entropia: Ignora nós fantasmas inalcançáveis
-                
-            owner = group.get("owner")
+            owner = group.get("owner") or group.get("account_id")
+            if not owner:
+                continue
+
             # Construtor da Pessoa O(1)
             if owner not in initial_state:
                 initial_state[owner] = {
-                    "tg_node": group.get("tg_node"),
+                    "tg_node": group.get("account_id"),
                     "status": "LIVRE", # LIVRE, FLOODWAIT, ESVAZIADO
                     "flood_wait_until": 0.0,
                     "groups": {}
                 }
             
             # Construtor do Fardo do Grupo Específico
-            initial_state[owner]["groups"][str(group.get("id"))] = {
-                "link": group.get("link_convite", ""),
+            initial_state[owner]["groups"][str(group.get("group_id"))] = {
+                "link": group.get("invite_link", ""),
                 "internal_code": group.get("internal_code", ""),
                 "actions": {
                     "clear_history": "PENDENTE",

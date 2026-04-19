@@ -51,31 +51,18 @@ class GiftInjector:
 
         raise RuntimeError("Nao foi possivel extrair o codigo do gift.")
 
-    async def _save_gift_state(self, record: dict, gift_code: str):
-        state = self.persistence.load_gift_state()
-        group_key = str(record["group_id"])
-        timestamp = utc_now()
-
-        state.setdefault("groups", {})[group_key] = {
-            "owner": record.get("owner", ""),
-            "phone": record.get("phone", ""),
-            "code": gift_code,
-            "status": "DONE",
-            "done_at": timestamp,
-            "generated_at": timestamp,
+    def _save_gift_state(self, record: dict, gift_code: str, redeem_message_id: int):
+        next_record = {
+            **record,
+            "gift_code": gift_code,
+            "gift_redeem_message_id": redeem_message_id,
+            "status": "READY",
+            "updated_at": utc_now(),
         }
-        state.setdefault("generated_codes", {})[gift_code] = {
-            "group_id": record["group_id"],
-            "owner": record.get("owner", ""),
-            "phone": record.get("phone", ""),
-            "generated_at": timestamp,
-            "status": "DONE",
-            "done_at": timestamp,
-        }
-        self.persistence.save_gift_state(state)
+        self.persistence.upsert_group_record(next_record)
 
     async def run(self):
-        groups = self.persistence.load_group_database()
+        groups = self.persistence.load_groups()
         if not groups:
             logger.warning("Base de grupos vazia. Nada para processar.")
             return
@@ -92,8 +79,8 @@ class GiftInjector:
 
                 try:
                     gift_code = await self._generate_gift_code()
-                    await self.master.send_message(group_id, f"/resgatar_gift {gift_code}")
-                    await self._save_gift_state(record, gift_code)
+                    sent = await self.master.send_message(group_id, f"/resgatar_gift {gift_code}")
+                    self._save_gift_state(record, gift_code, sent.id)
                     logger.info("Gift reenviado para [%s].", record.get("group_name", group_id))
                     await asyncio.sleep(2)
                 except FloodWaitError as error:

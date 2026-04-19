@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 import telethon.network.mtprotostate
 
-from core.settings import config, BASE_DIR
+from core.settings import config, BASE_DIR, SESSION_DIR
 from data.io_manager import PersistenceManager
 
 
@@ -29,12 +29,16 @@ async def authenticate_account(account: dict):
     phone = account.get("phone")
     api_id = account.get("api_id")
     api_hash = account.get("api_hash")
+    session_dir = account.get("session_dir", SESSIONS_DIR)
+    session_name = account.get("session_name") or phone
+    role_label = account.get("role_label", "DRONE")
 
     if not phone or not api_id or not api_hash:
         print(f"⚠️ Conta ignorada por faltar phone/api_id/api_hash: {name}")
         return
 
-    session_path = os.path.join(SESSIONS_DIR, f"{phone}.session")
+    os.makedirs(session_dir, exist_ok=True)
+    session_path = os.path.join(session_dir, f"{session_name}.session")
     client = TelegramClient(session_path, api_id, api_hash)
     await client.connect()
 
@@ -44,7 +48,7 @@ async def authenticate_account(account: dict):
             return
 
         print(f"\n=======================================================")
-        print(f"👤 INICIANDO LOGIN DRONE: {name}")
+        print(f"👤 INICIANDO LOGIN {role_label}: {name}")
         print(f"📱 Telefone: {phone}")
         print(f"=======================================================")
 
@@ -70,8 +74,21 @@ async def main():
     print("--------------------------")
     print(f"Master fixo mantido pela sessão raiz: {config.PHONE}")
 
+    if config.SUB_MASTER_PHONE and config.SUB_MASTER_API_ID and config.SUB_MASTER_API_HASH:
+        await authenticate_account(
+            {
+                "name": config.SUB_MASTER_NAME,
+                "phone": config.SUB_MASTER_PHONE,
+                "api_id": config.SUB_MASTER_API_ID,
+                "api_hash": config.SUB_MASTER_API_HASH,
+                "session_dir": SESSION_DIR,
+                "session_name": config.SUB_MASTER_SESSION_NAME,
+                "role_label": "SUB MASTER",
+            }
+        )
+
     if not accounts:
-        print("⚠️ Nenhum drone configurado em data/accounts_mapping.json.")
+        print("⚠️ Nenhum drone configurado em data/accounts.json.")
         return
 
     for account in accounts:

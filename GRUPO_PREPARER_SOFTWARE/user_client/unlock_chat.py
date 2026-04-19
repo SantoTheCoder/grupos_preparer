@@ -1,6 +1,5 @@
 import sys
 import os
-import json
 import asyncio
 import logging
 
@@ -12,11 +11,13 @@ from telethon.tl.functions.messages import EditChatDefaultBannedRightsRequest
 from telethon.errors.rpcerrorlist import FloodWaitError
 
 from core.settings import config, SESSION_DIR, DATA_DIR, BASE_DIR
+from data.io_manager import PersistenceManager
 
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s [%(name)s] %(message)s", datefmt="%H:%M:%S")
 logger = logging.getLogger("UNLOCK_CHAT")
 
 async def main():
+    persistence = PersistenceManager()
     master_session = os.path.join(SESSION_DIR, 'user_account.session')
     master = TelegramClient(master_session, config.API_ID, config.API_HASH, flood_sleep_threshold=0)
 
@@ -25,8 +26,8 @@ async def main():
         logger.error("Mestre nao autorizado.")
         return
 
-    with open(os.path.join(DATA_DIR, 'accounts_mapping.json'), 'r', encoding='utf-8') as f:
-        accounts_map = json.load(f)
+    accounts_map = persistence.load_accounts()
+    groups = persistence.load_groups()
 
     total = 0
     success = 0
@@ -34,10 +35,15 @@ async def main():
 
     for acc in accounts_map:
         person = acc.get("name", "Desconhecido")
+        account_id = acc.get("account_id")
         phone = acc.get("phone")
-        groups = acc.get("groups", [])
+        owned_groups = [
+            g
+            for g in groups
+            if g.get("account_id") == account_id or (g.get("owner") == person and g.get("phone") == phone)
+        ]
 
-        if not groups:
+        if not owned_groups:
             continue
 
         session_path = os.path.join(BASE_DIR, 'user_client', 'sessions', f"{phone}.session")
@@ -56,9 +62,9 @@ async def main():
         dialogs = await worker.get_dialogs(limit=100)
         dialog_map = {d.id: d.entity for d in dialogs}
 
-        for g in groups:
-            g_code = g.get("code", "")
-            g_id = g.get("id")
+        for g in owned_groups:
+            g_code = g.get("internal_code", "")
+            g_id = g.get("group_id")
             entity = dialog_map.get(g_id)
 
             if not entity:

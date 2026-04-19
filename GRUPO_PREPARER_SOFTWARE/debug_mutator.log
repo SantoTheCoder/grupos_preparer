@@ -3355,3 +3355,9 @@ sqlite3.OperationalError: database is locked
 [12:42:09] WARNING [NOVO_PIPELINE:431] Modo de teste ativado. Encerrando apos a primeira tarefa.
 [12:42:09] INFO [telethon.network.mtprotosender:325] Disconnecting from 149.154.175.60:443/TcpFull...
 [12:42:09] INFO [telethon.network.mtprotosender:345] Disconnection from 149.154.175.60:443/TcpFull complete!
+[15:35:23] INFO [telethon.network.mtprotosender:234] Connecting to 149.154.175.60:443/TcpFull...
+[15:35:23] INFO [telethon.network.mtprotosender:285] Connection to 149.154.175.60:443/TcpFull complete!
+[15:35:25] INFO [NOVO_PIPELINE:102] Master conectado com sucesso.
+[15:35:25] WARNING [NOVO_PIPELINE:464] Modo de teste ativado. Encerrando apos a primeira tarefa.
+[15:35:25] INFO [telethon.network.mtprotosender:325] Disconnecting from 149.154.175.60:443/TcpFull...
+[15:35:25] INFO [telethon.network.mtprotosender:345] Disconnection from 149.154.175.60:443/TcpFull complete!

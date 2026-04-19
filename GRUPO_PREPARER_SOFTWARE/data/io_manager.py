@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 class PersistenceManager:
     def __init__(self):
         self.accounts_path = config.accounts_file
-        self.queue_path = config.group_queue_file
-        self.database_path = config.group_database_file
-        self.gift_state_path = config.gift_injection_state_file
+        self.groups_path = config.groups_file
 
     def _read_json(self, path: str, default: Any):
         if not os.path.exists(path):
@@ -38,55 +36,52 @@ class PersistenceManager:
     def save_accounts(self, accounts: list[dict]):
         self._write_json(self.accounts_path, accounts)
 
-    def load_seed_queue(self) -> list[dict]:
-        return self._read_json(self.queue_path, [])
+    def load_groups(self) -> list[dict]:
+        return self._read_json(self.groups_path, [])
 
-    def save_seed_queue(self, groups: list[dict]):
-        self._write_json(self.queue_path, groups)
-
-    def load_group_database(self) -> list[dict]:
-        return self._read_json(self.database_path, [])
-
-    def save_group_database(self, groups: list[dict]):
-        self._write_json(self.database_path, groups)
+    def save_groups(self, groups: list[dict]):
+        self._write_json(self.groups_path, groups)
 
     def upsert_group_record(self, record: dict):
-        groups = self.load_group_database()
+        groups = self.load_groups()
         group_id = record.get("group_id")
         internal_code = record.get("internal_code")
-        owner = record.get("owner")
+        account_id = record.get("account_id")
 
         for index, existing in enumerate(groups):
             if group_id and existing.get("group_id") == group_id:
                 groups[index] = {**existing, **record}
-                self.save_group_database(groups)
+                self.save_groups(groups)
                 return
 
             if (
                 internal_code
-                and owner
+                and account_id
                 and existing.get("internal_code") == internal_code
-                and existing.get("owner") == owner
+                and existing.get("account_id") == account_id
             ):
                 groups[index] = {**existing, **record}
-                self.save_group_database(groups)
+                self.save_groups(groups)
                 return
 
         groups.append(record)
-        self.save_group_database(groups)
-
-    def save_gift_state(self, state: dict):
-        self._write_json(self.gift_state_path, state)
-
-    def load_gift_state(self) -> dict:
-        return self._read_json(
-            self.gift_state_path,
-            {"version": 1, "groups": {}, "generated_codes": {}},
-        )
+        self.save_groups(groups)
 
     # Wrappers de compatibilidade para scripts antigos ainda presentes no repo.
     def save_state(self, groups: list[dict]):
-        self.save_group_database(groups)
+        self.save_groups(groups)
 
     def load_state(self) -> list[dict]:
-        return self.load_group_database()
+        return self.load_groups()
+
+    def load_seed_queue(self) -> list[dict]:
+        return self.load_groups()
+
+    def save_seed_queue(self, groups: list[dict]):
+        self.save_groups(groups)
+
+    def load_group_database(self) -> list[dict]:
+        return self.load_groups()
+
+    def save_group_database(self, groups: list[dict]):
+        self.save_groups(groups)
