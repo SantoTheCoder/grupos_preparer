@@ -28,7 +28,13 @@
         "gift_redeem_message_id": 8,
         "text_message_id": 11,
         "pinned_message_id": 11,
-        "status": "READY"
+        "status": "READY",
+        "jap_order_id": 949861226,
+        "jap_order_date": "2026-04-19T18:46:38.602303",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "paloma-freitas-5640",
@@ -59,7 +65,13 @@
         "text_message_id": 11,
         "pinned_message_id": 11,
         "gift_code": "SYNTAX-B5A516D1",
-        "gift_redeem_message_id": 13
+        "gift_redeem_message_id": 13,
+        "jap_order_id": 949866212,
+        "jap_order_date": "2026-04-19T19:09:14.570574",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "leonardo-rezende-0492",
@@ -90,7 +102,13 @@
         "text_message_id": 9,
         "pinned_message_id": 9,
         "gift_code": "SYNTAX-3FA05FEB",
-        "gift_redeem_message_id": 11
+        "gift_redeem_message_id": 11,
+        "jap_order_id": 949866216,
+        "jap_order_date": "2026-04-19T19:09:15.984174",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "ricardo-mendes-2392",
@@ -121,7 +139,13 @@
         "text_message_id": 9,
         "pinned_message_id": 9,
         "gift_code": "SYNTAX-6DE15155",
-        "gift_redeem_message_id": 11
+        "gift_redeem_message_id": 11,
+        "jap_order_id": 949866223,
+        "jap_order_date": "2026-04-19T19:09:17.546300",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "caio-vieira-9441",
@@ -152,7 +176,13 @@
         "text_message_id": 9,
         "pinned_message_id": 9,
         "gift_code": "SYNTAX-5E40D9ED",
-        "gift_redeem_message_id": 11
+        "gift_redeem_message_id": 11,
+        "jap_order_id": 949866225,
+        "jap_order_date": "2026-04-19T19:09:19.045104",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "evandro-ramos-5832",
@@ -183,7 +213,13 @@
         "text_message_id": 9,
         "pinned_message_id": 9,
         "gift_code": "SYNTAX-6D6AD473",
-        "gift_redeem_message_id": 11
+        "gift_redeem_message_id": 11,
+        "jap_order_id": 949866227,
+        "jap_order_date": "2026-04-19T19:09:20.432527",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "karina-siqueira-1013",
@@ -214,7 +250,13 @@
         "text_message_id": 9,
         "pinned_message_id": 9,
         "gift_code": "SYNTAX-2E4B742D",
-        "gift_redeem_message_id": 11
+        "gift_redeem_message_id": 11,
+        "jap_order_id": 949866232,
+        "jap_order_date": "2026-04-19T19:09:21.820755",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "eduardo-aguiar-8009",
@@ -245,7 +287,13 @@
         "text_message_id": 9,
         "pinned_message_id": 9,
         "gift_code": "SYNTAX-5573B636",
-        "gift_redeem_message_id": 11
+        "gift_redeem_message_id": 11,
+        "jap_order_id": 949866236,
+        "jap_order_date": "2026-04-19T19:09:23.254138",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "anderson-tavares-6539",
@@ -276,7 +324,13 @@
         "text_message_id": 9,
         "pinned_message_id": 9,
         "gift_code": "SYNTAX-B442D4D9",
-        "gift_redeem_message_id": 11
+        "gift_redeem_message_id": 11,
+        "jap_order_id": 949866240,
+        "jap_order_date": "2026-04-19T19:09:24.639447",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "samara-bastos-1278",
@@ -307,7 +361,13 @@
         "text_message_id": 9,
         "pinned_message_id": 9,
         "gift_code": "SYNTAX-9D3C5DC0",
-        "gift_redeem_message_id": 11
+        "gift_redeem_message_id": 11,
+        "jap_order_id": 949866246,
+        "jap_order_date": "2026-04-19T19:09:26.045242",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "carlos-bueno-1466",
@@ -338,7 +398,13 @@
         "text_message_id": 9,
         "pinned_message_id": 9,
         "gift_code": "SYNTAX-0C1E1491",
-        "gift_redeem_message_id": 11
+        "gift_redeem_message_id": 11,
+        "jap_order_id": 949866248,
+        "jap_order_date": "2026-04-19T19:09:27.449369",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "iris-braga-7230",
@@ -369,7 +435,13 @@
         "text_message_id": 7,
         "pinned_message_id": 7,
         "gift_code": "SYNTAX-F29C6C37",
-        "gift_redeem_message_id": 9
+        "gift_redeem_message_id": 9,
+        "jap_order_id": 949866251,
+        "jap_order_date": "2026-04-19T19:09:28.836905",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "esther-correia-2766",
@@ -400,7 +472,13 @@
         "text_message_id": 7,
         "pinned_message_id": 7,
         "gift_code": "SYNTAX-ED2A4ECE",
-        "gift_redeem_message_id": 9
+        "gift_redeem_message_id": 9,
+        "jap_order_id": 949866258,
+        "jap_order_date": "2026-04-19T19:09:30.978409",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "felipe-batista-2507",
@@ -431,7 +509,13 @@
         "text_message_id": 7,
         "pinned_message_id": 7,
         "gift_code": "SYNTAX-2B70B53E",
-        "gift_redeem_message_id": 9
+        "gift_redeem_message_id": 9,
+        "jap_order_id": 949866264,
+        "jap_order_date": "2026-04-19T19:09:32.610022",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "dayane-reis-8494",
@@ -462,7 +546,13 @@
         "text_message_id": 7,
         "pinned_message_id": 7,
         "gift_code": "SYNTAX-D8AE5FC8",
-        "gift_redeem_message_id": 9
+        "gift_redeem_message_id": 9,
+        "jap_order_id": 949866268,
+        "jap_order_date": "2026-04-19T19:09:34.668210",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "carolina-bittencourt-1349",
@@ -493,7 +583,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-30F49F55",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866277,
+        "jap_order_date": "2026-04-19T19:09:36.570605",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "cintia-castro-9451",
@@ -524,7 +620,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-2851EE0D",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866282,
+        "jap_order_date": "2026-04-19T19:09:38.401521",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "amanda-dias-9357",
@@ -555,7 +657,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-EEE7B4A0",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866288,
+        "jap_order_date": "2026-04-19T19:09:39.881460",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "stephany-rocha-4227",
@@ -586,7 +694,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-C8A39759",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866296,
+        "jap_order_date": "2026-04-19T19:09:41.269141",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "raul-sarmento-1965",
@@ -617,7 +731,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-7C283769",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866302,
+        "jap_order_date": "2026-04-19T19:09:42.666364",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "livia-mattos-7759",
@@ -648,7 +768,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-745B8DFA",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866308,
+        "jap_order_date": "2026-04-19T19:09:44.055627",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "hugo-lacerda-5571",
@@ -679,7 +805,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-291B7E5D",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866311,
+        "jap_order_date": "2026-04-19T19:09:45.470183",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "vanessa-bezerra-3520",
@@ -710,7 +842,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-70B233A9",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866316,
+        "jap_order_date": "2026-04-19T19:09:46.911459",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "jussara-damasceno-2838",
@@ -741,7 +879,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-F09B04DF",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866318,
+        "jap_order_date": "2026-04-19T19:09:48.344003",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "simone-lima-5341",
@@ -772,7 +916,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-6518EE8E",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866324,
+        "jap_order_date": "2026-04-19T19:09:49.754342",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "erica-franco-4416",
@@ -803,7 +953,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-E927B30B",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866328,
+        "jap_order_date": "2026-04-19T19:09:51.158477",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "helena-neves-4938",
@@ -834,7 +990,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-0F879AD6",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866333,
+        "jap_order_date": "2026-04-19T19:09:52.552641",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "otavio-macedo-0807",
@@ -865,7 +1027,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-E228570B",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866336,
+        "jap_order_date": "2026-04-19T19:09:53.939631",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "rosana-mota-1818",
@@ -896,7 +1064,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-A8A489FE",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866342,
+        "jap_order_date": "2026-04-19T19:09:55.360024",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "karen-motta-8765",
@@ -927,7 +1101,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-E28DF603",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866345,
+        "jap_order_date": "2026-04-19T19:09:56.760353",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "yasmim-santos-8211",
@@ -958,7 +1138,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-D4B4F857",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866347,
+        "jap_order_date": "2026-04-19T19:09:58.153333",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "wallace-figueiredo-4743",
@@ -989,7 +1175,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-7F431991",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866352,
+        "jap_order_date": "2026-04-19T19:09:59.567802",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "wesley-pires-6707",
@@ -1020,7 +1212,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-079B6609",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866357,
+        "jap_order_date": "2026-04-19T19:10:00.996708",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "danilo-pacheco-2795",
@@ -1051,7 +1249,13 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-4229EF3F",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866363,
+        "jap_order_date": "2026-04-19T19:10:02.414394",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     },
     {
         "account_id": "sabrina-linhares-3490",
@@ -1082,6 +1286,12 @@
         "text_message_id": 5,
         "pinned_message_id": 5,
         "gift_code": "SYNTAX-A5CB12D4",
-        "gift_redeem_message_id": 7
+        "gift_redeem_message_id": 7,
+        "jap_order_id": 949866374,
+        "jap_order_date": "2026-04-19T19:10:03.864566",
+        "jap_order_quantity": 7000,
+        "jap_order_service": 8092,
+        "hidden_members": true,
+        "media_disabled": true
     }
 ]
