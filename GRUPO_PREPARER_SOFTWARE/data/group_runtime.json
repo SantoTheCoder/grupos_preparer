@@ -1,0 +1,380 @@
+[
+    {
+        "account_id": "pedro-grupo-5015",
+        "internal_code": "A04",
+        "node_operacional": "bot_004_novo",
+        "phone": "+5561990005015",
+        "owner": "Pedro Grupo"
+    },
+    {
+        "account_id": "suporte-dogba-1034",
+        "internal_code": "A05",
+        "node_operacional": "bot_005_novo",
+        "phone": "+5511939281034",
+        "owner": "Suporte Dogba"
+    },
+    {
+        "account_id": "suporte-dogba-1034",
+        "internal_code": "A06",
+        "node_operacional": "bot_006_novo",
+        "phone": "+5511939281034",
+        "owner": "Suporte Dogba"
+    },
+    {
+        "account_id": "juliana-molana-2788",
+        "internal_code": "A01",
+        "node_operacional": "bot_001_novo",
+        "phone": "+5511965062788",
+        "owner": "Juliana Molana"
+    },
+    {
+        "account_id": "marcio-grupon-3864",
+        "internal_code": "C09",
+        "node_operacional": "bot_029_novo",
+        "phone": "+5532984873864",
+        "owner": "Marcio Grupon"
+    },
+    {
+        "account_id": "arthuro-neves-4719",
+        "internal_code": "C08",
+        "node_operacional": "bot_028_novo",
+        "phone": "+5561996324719",
+        "owner": "Arthuro Neves"
+    },
+    {
+        "account_id": "cleide-nunes-da-silva-nunes-6582",
+        "internal_code": "C01",
+        "node_operacional": "bot_021_novo",
+        "phone": "+5511949516582",
+        "owner": "Cleide Nunes Da Silva Nunes"
+    },
+    {
+        "account_id": "leandro-e-rochele-7150",
+        "internal_code": "C06",
+        "node_operacional": "bot_026_novo",
+        "phone": "+5521981057150",
+        "owner": "Leandro e Rochele"
+    },
+    {
+        "account_id": "she-day-7525",
+        "internal_code": "B10",
+        "node_operacional": "bot_020_novo",
+        "phone": "+5562982097525",
+        "owner": "She Day"
+    },
+    {
+        "account_id": "jenny-garcia-4825",
+        "internal_code": "B07",
+        "node_operacional": "bot_017_novo",
+        "phone": "+5581991534825",
+        "owner": "Jenny Garcia"
+    },
+    {
+        "account_id": "fabio-silveira-2206",
+        "internal_code": "C05",
+        "node_operacional": "bot_025_novo",
+        "phone": "+5521970362206",
+        "owner": "Fabio Silveira"
+    },
+    {
+        "account_id": "nancy-3677",
+        "internal_code": "B04",
+        "node_operacional": "bot_014_novo",
+        "phone": "+5563991103677",
+        "owner": "Nancy"
+    },
+    {
+        "account_id": "h-nnah-duddy-6946",
+        "internal_code": "C07",
+        "node_operacional": "bot_027_novo",
+        "phone": "+5521986716946",
+        "owner": "Hαnnah Duddy"
+    },
+    {
+        "account_id": "felipe-batista-9867",
+        "internal_code": "A09",
+        "node_operacional": "bot_009_novo",
+        "phone": "+5596991559867",
+        "owner": "Felipe"
+    },
+    {
+        "account_id": "felipe-batista-9867",
+        "internal_code": "E04",
+        "node_operacional": "bot_044_novo",
+        "phone": "+5596991559867",
+        "owner": "Felipe Batista"
+    },
+    {
+        "account_id": "jessica-simao-leite-8701",
+        "internal_code": "A08",
+        "node_operacional": "bot_008_novo",
+        "phone": "+5511954248701",
+        "owner": "Jessica Simao leite"
+    },
+    {
+        "account_id": "stella-0689",
+        "internal_code": "A07",
+        "node_operacional": "bot_007_novo",
+        "phone": "+5521986750689",
+        "owner": "Stella"
+    },
+    {
+        "account_id": "ljunn-bb-1626",
+        "internal_code": "A02",
+        "node_operacional": "bot_002_novo",
+        "phone": "+5511913011626",
+        "owner": "Ljunn Bb"
+    },
+    {
+        "account_id": "ris-brun-8183",
+        "internal_code": "B05",
+        "node_operacional": "bot_015_novo",
+        "phone": "+5569992208183",
+        "owner": "Íris Brun"
+    },
+    {
+        "account_id": "michelle-3576",
+        "internal_code": "B02",
+        "node_operacional": "bot_012_novo",
+        "phone": "+5569992523576",
+        "owner": "Michelle"
+    },
+    {
+        "account_id": "bruno-silva-0618",
+        "internal_code": "D01",
+        "node_operacional": "bot_031_novo",
+        "phone": "+5511916370618",
+        "owner": "Bruno Silva"
+    },
+    {
+        "account_id": "paloma-freitas-5640",
+        "internal_code": "D02",
+        "node_operacional": "bot_032_novo",
+        "phone": "+5511949595640",
+        "owner": "Paloma Freitas"
+    },
+    {
+        "account_id": "leonardo-rezende-0492",
+        "internal_code": "D03",
+        "node_operacional": "bot_033_novo",
+        "phone": "+5511916970492",
+        "owner": "Leonardo Rezende"
+    },
+    {
+        "account_id": "ricardo-mendes-2392",
+        "internal_code": "D04",
+        "node_operacional": "bot_034_novo",
+        "phone": "+5511917692392",
+        "owner": "Ricardo Mendes"
+    },
+    {
+        "account_id": "caio-vieira-9441",
+        "internal_code": "D05",
+        "node_operacional": "bot_035_novo",
+        "phone": "+5511919029441",
+        "owner": "Caio Vieira"
+    },
+    {
+        "account_id": "evandro-ramos-5832",
+        "internal_code": "D06",
+        "node_operacional": "bot_036_novo",
+        "phone": "+5511934995832",
+        "owner": "Evandro Ramos"
+    },
+    {
+        "account_id": "karina-siqueira-1013",
+        "internal_code": "D07",
+        "node_operacional": "bot_037_novo",
+        "phone": "+5511938001013",
+        "owner": "Karina Siqueira"
+    },
+    {
+        "account_id": "eduardo-aguiar-8009",
+        "internal_code": "D08",
+        "node_operacional": "bot_038_novo",
+        "phone": "+5511946608009",
+        "owner": "Eduardo Aguiar"
+    },
+    {
+        "account_id": "anderson-tavares-6539",
+        "internal_code": "D09",
+        "node_operacional": "bot_039_novo",
+        "phone": "+5511948006539",
+        "owner": "Anderson Tavares"
+    },
+    {
+        "account_id": "samara-bastos-1278",
+        "internal_code": "D10",
+        "node_operacional": "bot_040_novo",
+        "phone": "+5511948681278",
+        "owner": "Samara Bastos"
+    },
+    {
+        "account_id": "carlos-bueno-1466",
+        "internal_code": "E01",
+        "node_operacional": "bot_041_novo",
+        "phone": "+5511950011466",
+        "owner": "Carlos Bueno"
+    },
+    {
+        "account_id": "iris-braga-7230",
+        "internal_code": "E02",
+        "node_operacional": "bot_042_novo",
+        "phone": "+5511951667230",
+        "owner": "Iris Braga"
+    },
+    {
+        "account_id": "esther-correia-2766",
+        "internal_code": "E03",
+        "node_operacional": "bot_043_novo",
+        "phone": "+5511951732766",
+        "owner": "Esther Correia"
+    },
+    {
+        "account_id": "dayane-reis-8494",
+        "internal_code": "E05",
+        "node_operacional": "bot_045_novo",
+        "phone": "+5511953668494",
+        "owner": "Dayane Reis"
+    },
+    {
+        "account_id": "carolina-bittencourt-1349",
+        "internal_code": "E06",
+        "node_operacional": "bot_046_novo",
+        "phone": "+5511954591349",
+        "owner": "Carolina Bittencourt"
+    },
+    {
+        "account_id": "cintia-castro-9451",
+        "internal_code": "E07",
+        "node_operacional": "bot_047_novo",
+        "phone": "+5511958369451",
+        "owner": "Cintia Castro"
+    },
+    {
+        "account_id": "amanda-dias-9357",
+        "internal_code": "E08",
+        "node_operacional": "bot_048_novo",
+        "phone": "+5511958629357",
+        "owner": "Amanda Dias"
+    },
+    {
+        "account_id": "stephany-rocha-4227",
+        "internal_code": "E09",
+        "node_operacional": "bot_049_novo",
+        "phone": "+5511958924227",
+        "owner": "Stephany Rocha"
+    },
+    {
+        "account_id": "raul-sarmento-1965",
+        "internal_code": "E10",
+        "node_operacional": "bot_050_novo",
+        "phone": "+5511961961965",
+        "owner": "Raul Sarmento"
+    },
+    {
+        "account_id": "livia-mattos-7759",
+        "internal_code": "F01",
+        "node_operacional": "bot_051_novo",
+        "phone": "+5511962077759",
+        "owner": "Livia Mattos"
+    },
+    {
+        "account_id": "hugo-lacerda-5571",
+        "internal_code": "F02",
+        "node_operacional": "bot_052_novo",
+        "phone": "+5511963455571",
+        "owner": "Hugo Lacerda"
+    },
+    {
+        "account_id": "vanessa-bezerra-3520",
+        "internal_code": "F03",
+        "node_operacional": "bot_053_novo",
+        "phone": "+5511968983520",
+        "owner": "Vanessa Bezerra"
+    },
+    {
+        "account_id": "jussara-damasceno-2838",
+        "internal_code": "F04",
+        "node_operacional": "bot_054_novo",
+        "phone": "+5511969352838",
+        "owner": "Jussara Damasceno"
+    },
+    {
+        "account_id": "simone-lima-5341",
+        "internal_code": "F05",
+        "node_operacional": "bot_055_novo",
+        "phone": "+5562993055341",
+        "owner": "Simone Lima"
+    },
+    {
+        "account_id": "erica-franco-4416",
+        "internal_code": "F06",
+        "node_operacional": "bot_056_novo",
+        "phone": "+5562993544416",
+        "owner": "Erica Franco"
+    },
+    {
+        "account_id": "helena-neves-4938",
+        "internal_code": "F07",
+        "node_operacional": "bot_057_novo",
+        "phone": "+5562995284938",
+        "owner": "Helena Neves"
+    },
+    {
+        "account_id": "otavio-macedo-0807",
+        "internal_code": "F08",
+        "node_operacional": "bot_058_novo",
+        "phone": "+5563984410807",
+        "owner": "Otavio Macedo"
+    },
+    {
+        "account_id": "rosana-mota-1818",
+        "internal_code": "F09",
+        "node_operacional": "bot_059_novo",
+        "phone": "+5563999511818",
+        "owner": "Rosana Mota"
+    },
+    {
+        "account_id": "karen-motta-8765",
+        "internal_code": "F10",
+        "node_operacional": "bot_060_novo",
+        "phone": "+5564981248765",
+        "owner": "Karen Motta"
+    },
+    {
+        "account_id": "yasmim-santos-8211",
+        "internal_code": "G01",
+        "node_operacional": "bot_061_novo",
+        "phone": "+5564992008211",
+        "owner": "Yasmim Santos"
+    },
+    {
+        "account_id": "wallace-figueiredo-4743",
+        "internal_code": "G02",
+        "node_operacional": "bot_062_novo",
+        "phone": "+5564999104743",
+        "owner": "Wallace Figueiredo"
+    },
+    {
+        "account_id": "wesley-pires-6707",
+        "internal_code": "G03",
+        "node_operacional": "bot_063_novo",
+        "phone": "+5565993276707",
+        "owner": "Wesley Pires"
+    },
+    {
+        "account_id": "danilo-pacheco-2795",
+        "internal_code": "G04",
+        "node_operacional": "bot_064_novo",
+        "phone": "+5565996482795",
+        "owner": "Danilo Pacheco"
+    },
+    {
+        "account_id": "sabrina-linhares-3490",
+        "internal_code": "G05",
+        "node_operacional": "bot_065_novo",
+        "phone": "+5565996613490",
+        "owner": "Sabrina Linhares"
+    }
+]

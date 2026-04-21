@@ -35,6 +35,8 @@ class Settings(BaseSettings):
     DIRETORIO_DESCRICAO_GRUPO: str = "data/group_description.txt"
 
     ACCOUNTS_PATH: str = "data/accounts.json"
+    GROUP_INVENTORY_PATH: str = "data/group_inventory.json"
+    GROUP_RUNTIME_PATH: str = "data/group_runtime.json"
     GROUPS_PATH: str = "data/groups.json"
 
     GIFT_VALUE: int = 500
@@ -67,6 +69,14 @@ class Settings(BaseSettings):
     @property
     def accounts_file(self) -> str:
         return _resolve_path(self.ACCOUNTS_PATH)
+
+    @property
+    def group_inventory_file(self) -> str:
+        return _resolve_path(self.GROUP_INVENTORY_PATH)
+
+    @property
+    def group_runtime_file(self) -> str:
+        return _resolve_path(self.GROUP_RUNTIME_PATH)
 
     @property
     def groups_file(self) -> str:
